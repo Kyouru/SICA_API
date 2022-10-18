@@ -39,7 +39,7 @@ namespace APISICA.Controllers
             string strSQL = "";
             if (jsontoken.tipocarrito == _configuration.GetSection("TipoCarrito:RecibirPagare").Value || jsontoken.tipocarrito == _configuration.GetSection("TipoCarrito:EntregarPagare").Value)
             {
-                strSQL = "SELECT ID_TMP_CARRITO, SOLICITUD_SISGO, DESCRIPCION_3, DESCRIPCION_4, DESCRIPCION_5";
+                strSQL = "SELECT ID_TMP_CARRITO AS ID, SOLICITUD_SISGO, DESCRIPCION_3, DESCRIPCION_4, DESCRIPCION_5";
                 strSQL += " FROM ADMIN.PAGARE PA LEFT JOIN ADMIN.TMP_CARRITO TC ON TC.ID_AUX_FK = PA.ID_PAGARE";
                 strSQL += " WHERE TC.TIPO = '" + jsontoken.tipocarrito + "'";
                 strSQL += " AND TC.ID_USUARIO_FK = " + cuenta.IdUser;

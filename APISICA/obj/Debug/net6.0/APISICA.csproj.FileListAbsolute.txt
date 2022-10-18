@@ -104,3 +104,4 @@ D:\Zona de Trabajo\SICA\SICA_API\APISICA\obj\Debug\net6.0\refint\APISICA.dll
 D:\Zona de Trabajo\SICA\SICA_API\APISICA\obj\Debug\net6.0\APISICA.pdb
 D:\Zona de Trabajo\SICA\SICA_API\APISICA\obj\Debug\net6.0\APISICA.genruntimeconfig.cache
 D:\Zona de Trabajo\SICA\SICA_API\APISICA\obj\Debug\net6.0\ref\APISICA.dll
+D:\Zona de Trabajo\SICA\SICA_API\APISICA\bin\Debug\net6.0\appsettings_dummy.json

@@ -157,18 +157,22 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, A.ID_AREA, A.NOMBRE_AREA FROM ADMIN.USUARIO U LEFT JOIN ADMIN.AREA A ON U.ID_AREA_FK = A.ID_AREA WHERE ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser;
+            string strSQL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, A.ID_AREA, A.NOMBRE_AREA FROM ADMIN.USUARIO U LEFT JOIN ADMIN.AREA A ON U.ID_AREA_FK = A.ID_AREA WHERE 1 = 1";
             if (jsontoken.tiposeleccionarusuario == 1)
             {
-                strSQL += " AND A.REAL = 1 AND U.REAL = 1 AND ID_AREA <> " + _configuration.GetSection("Area:Custodia").Value;
+                strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1 AND ID_AREA <> " + _configuration.GetSection("Area:Custodia").Value;
             }
-            if (jsontoken.tiposeleccionarusuario == 2)
+            else if (jsontoken.tiposeleccionarusuario == 2)
             {
-                strSQL += " AND ID_AREA = " + _configuration.GetSection("Area:Boveda").Value;
+                strSQL += " AND U.ANULADO = 0 AND ID_AREA = " + _configuration.GetSection("Area:Boveda").Value;
+            }
+            else if (jsontoken.tiposeleccionarusuario == 3)
+            {
+                strSQL += " AND ID_AREA <> " + _configuration.GetSection("Area:Administrador").Value;
             }
             else
             {
-                strSQL += " AND A.REAL = 1 AND U.REAL = 1";
+                strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
             }
             strSQL += " ORDER BY A.ORDEN, U.ORDEN";
 
@@ -192,6 +196,7 @@ namespace APISICA.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpPost("pendienteconfirmarrecepcion")]
         public IActionResult pendienteConfirmarRecepcion(Class.JsonToken jsontoken)

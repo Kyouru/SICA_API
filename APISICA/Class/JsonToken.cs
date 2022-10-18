@@ -34,5 +34,6 @@
         public int tiposeleccionarusuario { get; set; } = -1;
         public int entransito { get; set; } = -1;
 
+        public bool anulado = false;
     }
 }
