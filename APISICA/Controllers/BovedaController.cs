@@ -69,8 +69,6 @@ namespace APISICA.Controllers
             }
         }
 
-
-
         [HttpPost("agregarcarritodocumento")]
         public IActionResult AgregarCarritoDocumento(Class.JsonToken jsontoken)
         {
@@ -92,7 +90,6 @@ namespace APISICA.Controllers
             strSQL += " FROM (ADMIN.TMP_CARRITO TC LEFT JOIN ADMIN.INVENTARIO_GENERAL IG ON TC.ID_INVENTARIO_GENERAL_FK = IG.ID_INVENTARIO_GENERAL)";
             strSQL += " LEFT JOIN ADMIN.USUARIO U ON U.ID_USUARIO = TC.ID_USUARIO_FK";
             strSQL += " WHERE ID_INVENTARIO_GENERAL_FK = " + jsontoken.idinventario;
-
 
             Conexion conn = new Conexion();
             try

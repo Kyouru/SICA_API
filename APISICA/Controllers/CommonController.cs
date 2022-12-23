@@ -77,7 +77,7 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 ORDER BY ORDEN DESC";
+            string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsontoken.iddepartamento + " ORDER BY ORDEN DESC";
 
             Conexion conn = new Conexion();
             try
@@ -99,8 +99,8 @@ namespace APISICA.Controllers
             }
         }
 
-        [HttpPost("listadescripcion")]
-        public IActionResult ListaDescripcion(Class.JsonToken jsontoken)
+        [HttpPost("listadetalle")]
+        public IActionResult ListaDetalle(Class.JsonToken jsontoken)
         {
             DataTable dt;
             Cuenta cuenta;
@@ -117,7 +117,127 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT ID_DESCRIPCION1, TIPO_DESCRIPCION1, NOMBRE_DESCRIPCION1 FROM ADMIN.LDESCRIPCION1 ORDER BY ORDEN ASC";
+            string strSQL = "SELECT ID_DETALLE, NOMBRE_DETALLE FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsontoken.iddocumento + " ORDER BY ORDEN ASC";
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                conn.ejecutarQuery();
+                dt = conn.llenarDataTable();
+                conn.cerrar();
+
+                string json = JsonConvert.SerializeObject(dt);
+                return Ok(json);
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("listaclasificacion")]
+        public IActionResult ListaClasificacion(Class.JsonToken jsontoken)
+        {
+            DataTable dt;
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                conn.ejecutarQuery();
+                dt = conn.llenarDataTable();
+                conn.cerrar();
+
+                string json = JsonConvert.SerializeObject(dt);
+                return Ok(json);
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("listaproducto")]
+        public IActionResult ListaProducto(Class.JsonToken jsontoken)
+        {
+            DataTable dt;
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                conn.ejecutarQuery();
+                dt = conn.llenarDataTable();
+                conn.cerrar();
+
+                string json = JsonConvert.SerializeObject(dt);
+                return Ok(json);
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("listacentrocosto")]
+        public IActionResult ListaCentroCosto(Class.JsonToken jsontoken)
+        {
+            DataTable dt;
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO";
 
             Conexion conn = new Conexion();
             try
