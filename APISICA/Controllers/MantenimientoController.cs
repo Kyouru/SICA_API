@@ -86,7 +86,7 @@ namespace APISICA.Controllers
                 connstr = "Default1";
             }
 
-            string strSQL = "SELECT COUNT(*) FROM USUARIO WHERE NOMBRE_USUARIO = '" + jsontoken.descripcion1 + "'";
+            string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO WHERE NOMBRE_USUARIO = '" + jsontoken.descripcion1 + "'";
 
             Conexion conn = new Conexion();
             try
@@ -101,7 +101,7 @@ namespace APISICA.Controllers
                     conn.iniciaCommand(strSQL);
                     int orden = conn.ejecutarQueryEscalar();
 
-                    strSQL = "INSERT INTO USUARIO (NOMBRE_USUARIO, ID_AREA_FK, REAL, CAMBIAR_PASSWORD, ORDEN, CERRAR_SESION, DATAMANAGER, PASSWORDHASH, PASSWORDSALT, EMAIL, CONNUSER, ANULADO, ACCESO_PERMITIDO)";
+                    strSQL = "INSERT INTO ADMIN.USUARIO (NOMBRE_USUARIO, ID_AREA_FK, REAL, CAMBIAR_PASSWORD, ORDEN, CERRAR_SESION, DATAMANAGER, PASSWORDHASH, PASSWORDSALT, EMAIL, CONNUSER, ANULADO, ACCESO_PERMITIDO)";
                     strSQL += " VALUES ('" + jsontoken.descripcion1 + "', " + jsontoken.idaux + ", 1, 1, " + orden + ", 0, 0, '" + _configuration.GetSection("DefaultPassword:hash").Value + "', '" + _configuration.GetSection("DefaultPassword:salt").Value + "', '" + jsontoken.descripcion2 + "', '" + connstr + "', 0, 0)";
                     strSQL += " RETURNING ID_USUARIO INTO :numero";
                     int id = conn.InsertReturnID(strSQL);
@@ -109,7 +109,7 @@ namespace APISICA.Controllers
                     {
                         return BadRequest("Error Creando Usuario");
                     }
-                    strSQL = "INSERT INTO PERMISO (ID_USUARIO_FK, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR, ENTREGAR, ENTREGAR_EXPEDIENTE, ENTREGAR_DOCUMENTO, RECIBIR, RECIBIR_NUEVO, RECIBIR_REINGRESO, RECIBIR_CONFIRMAR, RECIBIR_MANUAL, PAGARE, PAGARE_BUSCAR, PAGARE_RECIBIR, PAGARE_ENTREGAR, LETRA, LETRA_NUEVO, LETRA_ENTREGAR, LETRA_REINGRESO, LETRA_BUSCAR, IRONMOUNTAIN, IRONMOUNTAIN_SOLICITAR, IRONMOUNTAIN_RECIBIR, IRONMOUNTAIN_ARMAR, IRONMOUNTAIN_ENVIAR, IRONMOUNTAIN_ENTREGAR, IRONMOUNTAIN_CARGO, BOVEDA, BOVEDA_CAJA_RETIRAR, BOVEDA_CAJA_GUARDAR, BOVEDA_DOCUMENTO_RETIRAR, BOVEDA_DOCUMENTO_GUARDAR, MANTENIMIENTO, MANTENIMIENTO_CUENTA, MANTENIMIENTO_CREDITO, MANTENIMIENTO_SOCIO, IMPORTAR, IMPORTAR_ACTIVAS, IMPORTAR_PASIVAS, NIVEL)";
+                    strSQL = "INSERT INTO ADMIN.PERMISO (ID_USUARIO_FK, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR, ENTREGAR, ENTREGAR_EXPEDIENTE, ENTREGAR_DOCUMENTO, RECIBIR, RECIBIR_NUEVO, RECIBIR_REINGRESO, RECIBIR_CONFIRMAR, RECIBIR_MANUAL, PAGARE, PAGARE_BUSCAR, PAGARE_RECIBIR, PAGARE_ENTREGAR, LETRA, LETRA_NUEVO, LETRA_ENTREGAR, LETRA_REINGRESO, LETRA_BUSCAR, IRONMOUNTAIN, IRONMOUNTAIN_SOLICITAR, IRONMOUNTAIN_RECIBIR, IRONMOUNTAIN_ARMAR, IRONMOUNTAIN_ENVIAR, IRONMOUNTAIN_ENTREGAR, IRONMOUNTAIN_CARGO, BOVEDA, BOVEDA_CAJA_RETIRAR, BOVEDA_CAJA_GUARDAR, BOVEDA_DOCUMENTO_RETIRAR, BOVEDA_DOCUMENTO_GUARDAR, MANTENIMIENTO, MANTENIMIENTO_CUENTA, MANTENIMIENTO_CREDITO, MANTENIMIENTO_SOCIO, IMPORTAR, IMPORTAR_ACTIVAS, IMPORTAR_PASIVAS, NIVEL)";
                     if (jsontoken.idaux == Int32.Parse(_configuration.GetSection("Area:Custodia").Value))
                     {
                         //ID, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR
@@ -189,7 +189,7 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT * FROM USUARIO WHERE ID_USUARIO = " + jsontoken.idaux + "";
+            string strSQL = "SELECT * FROM ADMIN.USUARIO WHERE ID_USUARIO = " + jsontoken.idaux + "";
 
             Conexion conn = new Conexion();
             try

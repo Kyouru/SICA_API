@@ -36,17 +36,40 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT ID_INVENTARIO_GENERAL AS ID, NUMERO_DE_CAJA AS CAJA, DEP.NOMBRE_DEPARTAMENTO AS DEPART, DOC.NOMBRE_DOCUMENTO AS DOC, TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA, DESCRIPCION_1 AS DESC_1, DESCRIPCION_2 AS DESC_2, DESCRIPCION_3 AS DESC_3, DESCRIPCION_4 AS DESC_4, DESCRIPCION_5 AS DESC_5, LE.NOMBRE_ESTADO AS CUSTODIADO, U.NOMBRE_USUARIO AS POSEE, TO_CHAR(FECHA_POSEE, 'dd/MM/yyyy hh:mm:ss') AS FECHA";
-            strSQL += " FROM ((((ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.TMP_CARRITO TC ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK)";
-            strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO DEP ON DEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK)";
-            strSQL += " LEFT JOIN ADMIN.LDOCUMENTO DOC ON DOC.ID_DOCUMENTO = IG.ID_DOCUMENTO_FK)";
-            strSQL += " LEFT JOIN ADMIN.USUARIO U ON U.ID_USUARIO = IG.ID_USUARIO_POSEE)";
-            strSQL += " LEFT JOIN ADMIN.LESTADO LE ON LE.ID_ESTADO = IG.ID_ESTADO_FK";
+            string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,TO_CHAR(IG.FECHA_REGISTRO, 'DD/MM/YYYY') AS REGISTRO, EST.NOMBRE_ESTADO AS ESTADO,
+                        CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
+                             WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
+                             ELSE UBI.NOMBRE_UBICACION
+                        END AS UBICACION,
+                        NUMERO_DE_CAJA AS CAJA,
+                        LDEP.NOMBRE_DEPARTAMENTO AS DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO AS DOCUMENTO, LDET.NOMBRE_DETALLE AS DETALLE,
+                        TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA";
+            strSQL += " FROM ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.TMP_CARRITO TC ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK";
+            strSQL += @"    LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
+                                ON IG.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
+                            LEFT JOIN ADMIN.LDOCUMENTO LDOC
+                                ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
+                            LEFT JOIN ADMIN.LDETALLE LDET
+                                ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
+                            LEFT JOIN ADMIN.LCLASIFICACION LCLA
+                                ON IG.ID_CLASIFICACION_FK = LCLA.ID_CLASIFICACION
+                            LEFT JOIN ADMIN.LPRODUCTO LPRO
+                                ON IG.ID_PRODUCTO_FK = LPRO.ID_PRODUCTO
+                            LEFT JOIN ADMIN.UBICACION UBI
+                                ON IG.ID_UBICACION_FK = UBI.ID_UBICACION
+                            LEFT JOIN ADMIN.USUARIO USU
+                                ON IG.ID_USUARIO_POSEE_FK = USU.ID_USUARIO
+                            LEFT JOIN ADMIN.USUARIO_EXTERNO USUEX
+                                ON IG.ID_USUARIO_POSEE_FK = USUEX.ID_USUARIO_EXTERNO
+                            LEFT JOIN ADMIN.CENTRO_COSTO CC
+                                ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
+                            LEFT JOIN ADMIN.LESTADO EST
+                                ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
             strSQL += " WHERE TC.ID_TMP_CARRITO IS NULL";
-            strSQL += " AND IG.EXPEDIENTE = " + jsontoken.expediente + " AND ID_USUARIO_POSEE = " + cuenta.IdUser;
+            strSQL += " AND UBI.ID_UBICACION = 1 AND USU.ID_USUARIO = " + cuenta.IdUser;
 
             if (jsontoken.busquedalibre != "")
-                strSQL += " AND NUMERO_DE_CAJA || DESC_CONCAT LIKE '%" + jsontoken.busquedalibre + "%'";
+                strSQL += " AND DESC_CONCAT LIKE '%" + jsontoken.busquedalibre + "%'";
             if (jsontoken.entransito == 0)
                 strSQL += " AND ID_ESTADO_FK <> " + _configuration.GetSection("Estados:Transito").Value;
 
@@ -74,7 +97,7 @@ namespace APISICA.Controllers
         public IActionResult Entregar(Class.JsonToken jsontoken)
         {
             Cuenta cuenta;
-            int identrega, idrecibe, idestado;
+            int idestado;
             try
             {
                 cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
@@ -88,9 +111,6 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            identrega = cuenta.IdUser;
-            idrecibe = jsontoken.idaux;
-
             if (jsontoken.idarearecibe == Int32.Parse(_configuration.GetSection("Area:Custodia").Value) || jsontoken.idarearecibe == Int32.Parse(_configuration.GetSection("Area:Administrador").Value))
             {
                 idestado = Int32.Parse(_configuration.GetSection("Estados:Custodiado").Value);
@@ -99,53 +119,58 @@ namespace APISICA.Controllers
             {
                 if (!jsontoken.confirmar)
                 {
-                    idestado = Int32.Parse(_configuration.GetSection("Estados:Transito").Value);
+                    idestado = Int32.Parse(_configuration.GetSection("Estados:Prestado").Value);
                 }
                 else
                 {
-                    idestado = Int32.Parse(_configuration.GetSection("Estados:Prestado").Value);
+                    idestado = Int32.Parse(_configuration.GetSection("Estados:Transito").Value);
                 }
             }
 
+
+            string strSQL = "";
             Conexion conn = new Conexion();
             try
             {
                 conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                string strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE ID_INVENTARIO_GENERAL_FK = " + jsontoken.idinventario;
+                strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE ID_INVENTARIO_GENERAL_FK = " + jsontoken.idinventario;
                 conn.conectar();
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
 
-                strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_AREA_ENTREGA_FK, ID_AREA_RECIBE_FK, ID_INVENTARIO_GENERAL_FK, FECHA_INICIO, OBSERVACION, FECHA_FIN, RECIBIDO, ANULADO)
-                            VALUES (" + identrega + ", " + idrecibe + ", " + jsontoken.idareaentrega + ", " + jsontoken.idarearecibe + ", " + jsontoken.idinventario + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "',";
-
-                if (!jsontoken.confirmar)
+                strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + idestado + ", ID_UBICACION_FK = " + jsontoken.idubicacionrecibe;
+                if (jsontoken.idubicacionrecibe == Int32.Parse(_configuration.GetSection("Ubicacion:UsuarioExterno").Value) || jsontoken.idubicacionrecibe == Int32.Parse(_configuration.GetSection("Ubicacion:UsuarioInterno").Value))
                 {
-                    strSQL += " TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0)";
+                    strSQL += ", ID_USUARIO_POSEE_FK = " + cuenta.IdUser;
                 }
                 else
                 {
-                    strSQL += " NULL, 0, 0)";
+                    strSQL += ", ID_USUARIO_POSEE_FK = -1";
+                }
+                strSQL += " WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
+
+                conn.iniciaCommand(strSQL);
+                conn.ejecutarQuery();
+                if (!jsontoken.confirmar)
+                {
+                    //Prestado
+                    strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, ID_INVENTARIO_GENERAL_FK,
+                            FECHA_INICIO, OBSERVACION, FECHA_FIN, RECIBIDO, ANULADO, USUARIO, FECHA)
+                            VALUES (" + jsontoken.identrega + ", " + jsontoken.idrecibe + ", (SELECT ID_UBICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "), " + jsontoken.idubicacionrecibe + ", " + jsontoken.idinventario  + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "',";
+                    strSQL += " TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0, " + cuenta.IdUser + ", SYSDATE)";
+                }
+                else
+                {
+                    //En Transito
+                    strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_AREA_ENTREGA_FK, ID_AREA_RECIBE_FK, ID_INVENTARIO_GENERAL_FK,
+                            FECHA_INICIO, OBSERVACION, FECHA_FIN, RECIBIDO, ANULADO, USUARIO, FECHA)
+                            VALUES (" + jsontoken.identrega + ", " + jsontoken.idrecibe + ", (SELECT ID_UBICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "), " + jsontoken.idubicacionrecibe + ", " + jsontoken.idinventario + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "',";
+                    strSQL += " NULL, 0, 0, " + cuenta.IdUser + ", SYSDATE)";
+
                 }
 
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
-
-                if (!jsontoken.confirmar)
-                {
-                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + idestado + ", ID_USUARIO_POSEE = " + idrecibe + ", FECHA_POSEE = TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
-                    conn.iniciaCommand(strSQL);
-                    conn.ejecutarQuery();
-                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
-                    conn.iniciaCommand(strSQL);
-                    conn.ejecutarQuery();
-                }
-                else
-                {
-                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + Int32.Parse(_configuration.GetSection("Estados:Transito").Value) + " WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
-                    conn.iniciaCommand(strSQL);
-                    conn.ejecutarQuery();
-                }
 
                 conn.cerrar();
 
@@ -154,7 +179,7 @@ namespace APISICA.Controllers
             catch (Exception ex)
             {
                 conn.cerrar();
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + "\n" + strSQL);
             }
         }
     }

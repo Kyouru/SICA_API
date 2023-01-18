@@ -43,5 +43,24 @@
         public int entransito { get; set; } = -1;
 
         public bool anulado = false;
+        public string strdepartamento { get; set; } = string.Empty;
+        public string strdocumento { get; set; } = string.Empty;
+        public string strdetalle { get; set; } = string.Empty;
+        public string strclasificacion { get; set; } = string.Empty;
+        public string strproducto { get; set; } = string.Empty;
+        public string strcentrocosto { get; set; } = string.Empty;
+        public string strubicacion { get; set; } = string.Empty;
+        public int idubicacionentrega { get; set; } = -1;
+        public int idubicacionrecibe { get; set; } = -1;
+
+        public bool pendienteok { get; set; } = false;
+        public bool opcion1 { get; set; } = false;
+
+        public bool modificado { get; set; } = false;
+        public string pendiente { get; set; } = string.Empty;
+        public string detallepen { get; set; } = string.Empty;
+        public string banca { get; set; } = string.Empty;
+        public int identrega { get; set; } = -1;
+        public int idrecibe { get; set; } = -1;
     }
 }

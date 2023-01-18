@@ -11,14 +11,15 @@
         public int auBusqueda { get; set; } = 0;
         public int auBusquedaHistorico { get; set; } = 0;
         public int auBusquedaEditar { get; set; } = 0;
-        public int auEntregar { get; set; } = 0;
-        public int auEntregarExpediente { get; set; } = 0;
-        public int auEntregarDocumento { get; set; } = 0;
-        public int auRecibir { get; set; } = 0;
-        public int auRecibirNuevo { get; set; } = 0;
-        public int auRecibirReingreso { get; set; } = 0;
-        public int auRecibirConfirmar { get; set; } = 0;
-        public int auRecibirManual { get; set; } = 0;
+        public int auMover { get; set; } = 0;
+        public int auMoverExpediente { get; set; } = 0;
+        public int auMoverDocumento { get; set; } = 0;
+        public int auMoverMasivo { get; set; } = 0;
+        public int auValija { get; set; } = 0;
+        public int auValijaNuevo { get; set; } = 0;
+        public int auValijaReingreso { get; set; } = 0;
+        public int auValijaConfirmar { get; set; } = 0;
+        public int auValijaManual { get; set; } = 0;
         public int auPagare { get; set; } = 0;
         public int auPagareBuscar { get; set; } = 0;
         public int auPagareRecibir { get; set; } = 0;
@@ -48,6 +49,13 @@
         public int auMantenimientoSocio { get; set; } = 0;
         public int auMantenimientoCredito { get; set; } = 0;
         public int auNivel { get; set; } = 0;
+        public int auPendiente { get; set; } = 0;
+        public int auPendienteRegularizar { get; set; } = 0;
+        public int auReporte { get; set; } = 0;
+        public int auReporteCajas { get; set; } = 0;
+        public int auPrestar { get; set; } = 0;
+        public int auPrestarPrestar { get; set; } = 0;
+        public int auPrestarRecibir { get; set; } = 0;
         public string Token { get; set; } = String.Empty;
     }
 }

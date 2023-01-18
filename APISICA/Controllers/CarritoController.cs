@@ -39,26 +39,74 @@ namespace APISICA.Controllers
             string strSQL = "";
             if (jsontoken.tipocarrito == _configuration.GetSection("TipoCarrito:RecibirPagare").Value || jsontoken.tipocarrito == _configuration.GetSection("TipoCarrito:EntregarPagare").Value)
             {
-                strSQL = "SELECT ID_TMP_CARRITO AS ID, SOLICITUD_SISGO, DESCRIPCION_3, DESCRIPCION_4, DESCRIPCION_5";
+                strSQL = "SELECT ID_TMP_CARRITO AS ID, NUMEROSOLICITUD, CODIGO_SOCIO, NOMBRE_SOCIO";
                 strSQL += " FROM ADMIN.PAGARE PA LEFT JOIN ADMIN.TMP_CARRITO TC ON TC.ID_AUX_FK = PA.ID_PAGARE";
                 strSQL += " WHERE TC.TIPO = '" + jsontoken.tipocarrito + "'";
                 strSQL += " AND TC.ID_USUARIO_FK = " + cuenta.IdUser;
             }
             else if (jsontoken.tipocarrito == _configuration.GetSection("TipoCarrito:VerificarCaja").Value)
             {
-                strSQL = @"SELECT NUMERO_DE_CAJA, DESCRIPCION_1, DESCRIPCION_2, DESCRIPCION_3, DESCRIPCION_4, DESCRIPCION_5, U.NOMBRE_USUARIO, TO_CHAR(FECHA_POSEE, 'dd/MM/yyyy hh:mm:ss') AS FECHA
+                strSQL = @"SELECT NUMERO_DE_CAJA,
+                        CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
+                             WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
+                             ELSE UBI.NOMBRE_UBICACION
+                        END AS UBICACION,
+                        LDEP.NOMBRE_DEPARTAMENTO AS DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO AS DOCUMENTO, LDET.NOMBRE_DETALLE AS DETALLE,
+                        TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                        LCLA.NOMBRE_CLASIFICACION AS CLASIFICACION, OBSERVACION, CC.NOMBRE_CENTRO_COSTO AS CENTRO_COSTO, LPRO.NOMBRE_PRODUCTO AS PRODUCTO
                             FROM ADMIN.INVENTARIO_GENERAL IG
-                            LEFT JOIN ADMIN.USUARIO U ON U.ID_USUARIO = IG.ID_USUARIO_POSEE
-                            WHERE NUMERO_DE_CAJA = '" + jsontoken.numerocaja + "' AND ID_USUARIO_POSEE <> " + cuenta.IdUser + "";
+                            LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
+                                ON IG.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
+                            LEFT JOIN ADMIN.LDOCUMENTO LDOC
+                                ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
+                            LEFT JOIN ADMIN.LDETALLE LDET
+                                ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
+                            LEFT JOIN ADMIN.LCLASIFICACION LCLA
+                                ON IG.ID_CLASIFICACION_FK = LCLA.ID_CLASIFICACION
+                            LEFT JOIN ADMIN.LPRODUCTO LPRO
+                                ON IG.ID_PRODUCTO_FK = LPRO.ID_PRODUCTO
+                            LEFT JOIN ADMIN.UBICACION UBI
+                                ON IG.ID_UBICACION_FK = UBI.ID_UBICACION
+                            LEFT JOIN ADMIN.USUARIO USU
+                                ON IG.ID_USUARIO_POSEE_FK = USU.ID_USUARIO
+                            LEFT JOIN ADMIN.USUARIO_EXTERNO USUEX
+                                ON IG.ID_USUARIO_POSEE_FK = USUEX.ID_USUARIO_EXTERNO
+                            LEFT JOIN ADMIN.CENTRO_COSTO CC
+                                ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
+                            WHERE NUMERO_DE_CAJA = '" + jsontoken.numerocaja + "' AND ID_USUARIO_POSEE_FK <> " + cuenta.IdUser + "";
             }
             else
             {
-                strSQL = "SELECT ID_TMP_CARRITO AS ID, NUMERO_CAJA, TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA, DESCRIPCION_1 AS DESC_1, DESCRIPCION_2 AS DESC_2, DESCRIPCION_3 AS DESC_3, DESCRIPCION_4 AS DESC_4, DESCRIPCION_5 AS DESC_5, LE.NOMBRE_ESTADO AS CUSTODIADO, U.NOMBRE_USUARIO AS POSEE, TO_CHAR(FECHA_POSEE, 'dd/MM/yyyy hh:mm:ss') AS FECHA";
-                strSQL += " FROM ((ADMIN.TMP_CARRITO TC LEFT JOIN ADMIN.INVENTARIO_GENERAL IG ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK)";
-                strSQL += " LEFT JOIN ADMIN.LESTADO LE ON LE.ID_ESTADO = IG.ID_ESTADO_FK)";
-                strSQL += " LEFT JOIN ADMIN.USUARIO U ON U.ID_USUARIO = IG.ID_USUARIO_POSEE";
+                strSQL = @"SELECT ID_TMP_CARRITO AS ID, TO_CHAR(IG.FECHA_REGISTRO, 'DD/MM/YYYY') AS REGISTRO, EST.NOMBRE_ESTADO AS ESTADO,
+                        CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
+                             WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
+                             ELSE UBI.NOMBRE_UBICACION
+                        END AS UBICACION,
+                        IG.NUMERO_DE_CAJA AS CAJA, LDEP.NOMBRE_DEPARTAMENTO AS DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO AS DOCUMENTO, LDET.NOMBRE_DETALLE AS DETALLE,
+                        TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA, LCLA.NOMBRE_CLASIFICACION AS CLASIFICACION, OBSERVACION, CC.NOMBRE_CENTRO_COSTO AS CENTRO_COSTO, LPRO.NOMBRE_PRODUCTO AS PRODUCTO";
+                strSQL += " FROM ADMIN.TMP_CARRITO TC LEFT JOIN ADMIN.INVENTARIO_GENERAL IG ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK";
+                strSQL += @" LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
+                                ON IG.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
+                            LEFT JOIN ADMIN.LDOCUMENTO LDOC
+                                ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
+                            LEFT JOIN ADMIN.LDETALLE LDET
+                                ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
+                            LEFT JOIN ADMIN.LCLASIFICACION LCLA
+                                ON IG.ID_CLASIFICACION_FK = LCLA.ID_CLASIFICACION
+                            LEFT JOIN ADMIN.LPRODUCTO LPRO
+                                ON IG.ID_PRODUCTO_FK = LPRO.ID_PRODUCTO
+                            LEFT JOIN ADMIN.UBICACION UBI
+                                ON IG.ID_UBICACION_FK = UBI.ID_UBICACION
+                            LEFT JOIN ADMIN.USUARIO USU
+                                ON IG.ID_USUARIO_POSEE_FK = USU.ID_USUARIO
+                            LEFT JOIN ADMIN.USUARIO_EXTERNO USUEX
+                                ON IG.ID_USUARIO_POSEE_FK = USUEX.ID_USUARIO_EXTERNO
+                            LEFT JOIN ADMIN.CENTRO_COSTO CC
+                                ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
+                            LEFT JOIN ADMIN.LESTADO EST
+                                ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
                 strSQL += " WHERE TC.TIPO = '" + jsontoken.tipocarrito + "' AND TC.ID_USUARIO_FK = " + cuenta.IdUser;
-                strSQL += " ORDER BY NUMERO_CAJA";
+                strSQL += " ORDER BY NUMERO_DE_CAJA";
             }
 
             Conexion conn = new Conexion();
@@ -252,8 +300,21 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "SELECT TC.ID_INVENTARIO_GENERAL_FK AS ID, ROW_NUMBER() OVER(ORDER BY ID_INVENTARIO_GENERAL) AS NRO, DESCRIPCION_1 AS DEFINICION, DESCRIPCION_2 AS SOLICITUD, DESCRIPCION_3 AS COD_PRESTAMO, DESCRIPCION_4 AS NOMBRE_SOCIO";
-            strSQL += " FROM ADMIN.TMP_CARRITO TC LEFT JOIN ADMIN.INVENTARIO_GENERAL IG ON TC.ID_INVENTARIO_GENERAL_FK = IG.ID_INVENTARIO_GENERAL";
+            string strSQL = @"SELECT TC.ID_INVENTARIO_GENERAL_FK AS ID, ROW_NUMBER() OVER(ORDER BY ID_INVENTARIO_GENERAL) AS NRO, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD,
+                                LDEP.NOMBRE_DEPARTAMENTO AS DEP, LDOC.NOMBRE_DOCUMENTO AS DOC, LDET.NOMBRE_DETALLE AS DET, LPRO.NOMBRE_PRODUCTO AS PRODUCTO, CC.NOMBRE_CENTRO_COSTO AS CENTRO_COSTO, LCLA.NOMBRE_CLASIFICACION AS CLASIFICACION";
+            strSQL += @" FROM ADMIN.TMP_CARRITO TC LEFT JOIN ADMIN.INVENTARIO_GENERAL IG ON TC.ID_INVENTARIO_GENERAL_FK = IG.ID_INVENTARIO_GENERAL
+                            LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
+                                ON IG.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
+                            LEFT JOIN ADMIN.LDOCUMENTO LDOC
+                                ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
+                            LEFT JOIN ADMIN.LDETALLE LDET
+                                ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
+                            LEFT JOIN ADMIN.LCLASIFICACION LCLA
+                                ON IG.ID_CLASIFICACION_FK = LCLA.ID_CLASIFICACION
+                            LEFT JOIN ADMIN.LPRODUCTO LPRO
+                                ON IG.ID_PRODUCTO_FK = LPRO.ID_PRODUCTO
+                            LEFT JOIN ADMIN.CENTRO_COSTO CC
+                                ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO";
             strSQL += " WHERE TIPO = '" + jsontoken.tipocarrito + "' AND ID_USUARIO_FK = " + cuenta.IdUser;
 
             Conexion conn = new Conexion();
