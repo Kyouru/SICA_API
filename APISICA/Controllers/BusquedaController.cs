@@ -149,7 +149,6 @@ namespace APISICA.Controllers
         [HttpPost("guardareditar")]
         public IActionResult GuardarEditar(Class.JsonToken jsontoken)
         {
-            string status;
             Cuenta cuenta;
             try
             {
@@ -224,7 +223,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1
-                                        AND IG.ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + " ORDER BY IH.FECHA_INICIO";
+                                        AND IG.ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + " ORDER BY IH.FECHA DESC";
 
             Conexion conn = new Conexion();
 

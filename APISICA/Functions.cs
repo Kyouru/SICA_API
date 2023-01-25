@@ -87,7 +87,19 @@ namespace APISICA
             {
                 strSQL += " PEN_BANCA = '" + jsontoken.banca + "',";
             }
-            strSQL += " ID_USUARIO_REGISTRA_FK = " + cuenta.IdUser + ", CODIGO_SOCIO = '" + jsontoken.codigosocio + "', NOMBRE_SOCIO = '" + jsontoken.nombresocio + "', NUMEROSOLICITUD = '" + jsontoken.numerosolicitud + "',";
+            strSQL += " ID_USUARIO_REGISTRA_FK = " + cuenta.IdUser + ",";
+            if (jsontoken.codigosocio != "")
+            {
+                strSQL += " CODIGO_SOCIO = '" + jsontoken.codigosocio + "',";
+            }
+            if (jsontoken.nombresocio != "")
+            {
+                strSQL += " NOMBRE_SOCIO = '" + jsontoken.nombresocio + "',";
+            }
+            if (jsontoken.numerosolicitud != "")
+            {
+                strSQL += " NUMEROSOLICITUD = '" + jsontoken.numerosolicitud + "',";
+            }
             if (jsontoken.observacion != "")
             {
                 strSQL += " OBSERVACION = '" + jsontoken.observacion + "',";

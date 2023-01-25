@@ -59,6 +59,116 @@ namespace APISICA.Controllers
         }
 
 
+        [HttpPost("crearusuarioexterno")]
+        public IActionResult CrearUsuarioExterno(Class.JsonToken jsontoken)
+        {
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + jsontoken.nombreusuario + "'";
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                int cont = conn.ejecutarQueryEscalar();
+                if (cont == 0)
+                {
+                    strSQL = "SELECT MAX(ORDEN) + 1 FROM USUARIO_EXTERNO";
+                    conn.iniciaCommand(strSQL);
+                    int orden = conn.ejecutarQueryEscalar();
+
+                    strSQL = "INSERT INTO ADMIN.USUARIO_EXTERNO (NOMBRE_USUARIO_EXTERNO, EMAIL, NOTIFICAR, ORDEN, ANULADO)";
+                    strSQL += " VALUES ('" + jsontoken.nombreusuario + "', '" + jsontoken.correousuario + "', " + jsontoken.notificar + ", " + orden + ", 0)";
+                    strSQL += " RETURNING ID_USUARIO_EXTERNO INTO :numero";
+                    int id = conn.InsertReturnID(strSQL);
+
+                    conn.cerrar();
+
+                    if (id <= 0)
+                    {
+                        return BadRequest("Error Creando Usuario" + strSQL );
+                    }
+                    
+                    return Ok();
+                }
+                else
+                {
+                    conn.cerrar();
+                    return BadRequest("Usuario Duplicado" + strSQL);
+                }
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message + strSQL);
+            }
+        }
+
+        [HttpPost("modificarusuarioexterno")]
+        public IActionResult ModificarUsuarioExterno(Class.JsonToken jsontoken)
+        {
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + jsontoken.nombreusuario + "'";
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                int cont = conn.ejecutarQueryEscalar();
+                if (cont == 0)
+                {
+
+                    strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET NOMBRE_USUARIO_EXTERNO = '" + jsontoken.nombreusuario + "', EMAIL = '" + jsontoken.correousuario + "', NOTIFICAR = " + jsontoken.notificar + " WHERE ID_USUARIO_EXTERNO = " + jsontoken.idaux;
+
+                    conn.iniciaCommand(strSQL);
+                    conn.ejecutarQuery();
+
+                    conn.cerrar();
+
+                    return Ok();
+                }
+                else
+                {
+                    conn.cerrar();
+                    return BadRequest("Usuario Duplicado" + strSQL);
+                }
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message + strSQL);
+            }
+        }
+
         [HttpPost("crearusuario")]
         public IActionResult CrearUsuario(Class.JsonToken jsontoken)
         {

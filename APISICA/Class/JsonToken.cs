@@ -4,6 +4,7 @@
     {
         public string token { get; set; } = string.Empty;
         public int idaux { get; set; } = -1;
+        public int idestado { get; set; } = -1;
         public int idinventario { get; set; } = -1;
         public int iddepartamento { get; set; } = -1;
         public int iddocumento { get; set; } = -1;
@@ -40,6 +41,7 @@
         public string concat { get; set; } = string.Empty;
         public int entrega { get; set; } = -1;
         public int tiposeleccionarusuario { get; set; } = -1;
+        public int tiposeleccionarubicacion { get; set; } = -1;
         public int entransito { get; set; } = -1;
 
         public bool anulado = false;
@@ -62,5 +64,8 @@
         public string banca { get; set; } = string.Empty;
         public int identrega { get; set; } = -1;
         public int idrecibe { get; set; } = -1;
+        public string nombreusuario { get; set; } = string.Empty;
+        public string correousuario { get; set; } = string.Empty;
+        public int notificar { get; set; } = -1;
     }
 }

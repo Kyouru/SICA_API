@@ -345,8 +345,8 @@ namespace APISICA.Controllers
             }
         }
 
-        [HttpPost("listausuarios")]
-        public IActionResult ListaUsuarios(Class.JsonToken jsontoken)
+        [HttpPost("listausuarioexterno")]
+        public IActionResult ListaUsuariosExternos(Class.JsonToken jsontoken)
         {
             DataTable dt;
             Cuenta cuenta;
@@ -363,19 +363,61 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
 
-            string strSQL = "";;
+            string strSQL = ""; ;
             if (jsontoken.tiposeleccionarusuario == 1)
             {
-                strSQL =  "SELECT UX.ID_USUARIO_EXTERNO, UX.NOMBRE_USUARIO_EXTERNO, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIOEXTERNO UX ";
+                strSQL = "SELECT UX.ID_USUARIO_EXTERNO, UX.NOMBRE_USUARIO_EXTERNO, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
                 strSQL += "WHERE UX.ANULADO = 0 ORDER BY UX.ORDEN ASC";
             }
-            else if (jsontoken.tiposeleccionarusuario == 2)
+            else
             {
-                strSQL += " AND U.ANULADO = 0 AND ID_AREA = " + _configuration.GetSection("Area:Boveda").Value;
+                strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
             }
-            else if (jsontoken.tiposeleccionarusuario == 3)
+
+            Conexion conn = new Conexion();
+            try
             {
-                strSQL += " AND ID_AREA <> " + _configuration.GetSection("Area:Administrador").Value;
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+
+                conn.iniciaCommand(strSQL);
+                conn.ejecutarQuery();
+                dt = conn.llenarDataTable();
+                conn.cerrar();
+
+                string json = JsonConvert.SerializeObject(dt);
+                return Ok(json);
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("listaubicacion")]
+        public IActionResult ListaUbicacion(Class.JsonToken jsontoken)
+        {
+            DataTable dt;
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = ""; ;
+            if (jsontoken.tiposeleccionarubicacion == 1)
+            {
+                strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
+                strSQL += "WHERE UBI.ANULADO = 0 AND PRESTAR = 1 ORDER BY UBI.ORDEN ASC";
             }
             else
             {
@@ -555,6 +597,42 @@ namespace APISICA.Controllers
                     return BadRequest("Caja no Encontrada");
                 }
 
+            }
+            catch (Exception ex)
+            {
+                conn.cerrar();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("iddepartamento")]
+        public IActionResult IdDepartamento(Class.JsonToken jsontoken)
+        {
+            Cuenta cuenta;
+            try
+            {
+                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            if (!(cuenta.IdUser > 0))
+            {
+                return Unauthorized("Sesion no encontrada");
+            }
+
+            string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 AND NOMBRE_DEPARTAMENTO = " + jsontoken.strdepartamento;
+
+            Conexion conn = new Conexion();
+            try
+            {
+                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
+                conn.iniciaCommand(strSQL);
+                int id = conn.ejecutarQueryEscalar();
+                conn.cerrar();
+                return Ok(id);
             }
             catch (Exception ex)
             {

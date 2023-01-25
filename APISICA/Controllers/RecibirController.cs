@@ -39,7 +39,7 @@ namespace APISICA.Controllers
 
             string strSQL = @"INSERT INTO ADMIN.INVENTARIO_GENERAL (NUMERO_DE_CAJA, ID_DEPARTAMENTO_FK, ID_DOCUMENTO_FK, ID_DETALLE_FK, ID_CLASIFICACION_FK,
                             ID_PRODUCTO_FK, ID_CENTRO_COSTO_FK, ID_USUARIO_REGISTRA_FK, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD, OBSERVACION,
-                            FECHA_DESDE, FECHA_HASTA, FECHA_MODIFICA, FECHA_POSEE, ID_UBICACION_FK, ID_USUARIO_POSEE_FK, ID_ESTADO_FK, FECHA_REGISTRO, USER, DATE)";
+                            FECHA_DESDE, FECHA_HASTA, FECHA_MODIFICA, FECHA_POSEE, ID_UBICACION_FK, ID_USUARIO_POSEE_FK, ID_ESTADO_FK, FECHA_REGISTRO)";
             strSQL += " VALUES (";
             if (jsontoken.numerocaja != "")
             {
@@ -169,13 +169,12 @@ namespace APISICA.Controllers
             //fecharegistra
             if (jsontoken.fecha != "")
             {
-                strSQL += "TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'),";
+                strSQL += "TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'))";
             }
             else
             {
-                strSQL += "NULL,";
+                strSQL += "NULL)";
             }
-            strSQL += "" + cuenta.IdUser + ", SYSDATE)";
 
             strSQL += " RETURNING ID_INVENTARIO_GENERAL INTO :numero";
 
@@ -194,14 +193,15 @@ namespace APISICA.Controllers
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
 
-                strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_AREA_ENTREGA_FK, ID_AREA_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USER, DATE)";
-                strSQL += " VALUES (" + lastinsertid + ", " + jsontoken.idaux + ", " + cuenta.IdUser + ", " + jsontoken.idareaentrega + ", " + jsontoken.idarearecibe + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, " + jsontoken.idubicacionentrega + ", " + jsontoken.idubicacionrecibe + ", " + cuenta.IdUser  + ", SYSDATE)";
+                strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
+                strSQL += " VALUES (" + lastinsertid + ", " + jsontoken.idaux + ", " + cuenta.IdUser + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, " + jsontoken.idubicacionentrega + ", " + jsontoken.idubicacionrecibe + ", " + cuenta.IdUser  + ", SYSDATE)";
 
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
 
                 if (jsontoken.pagare == 1)
                 {
+                    /*
                     strSQL = "SELECT * FROM ADMIN.PAGARE WHERE NUMEROSOLICITUD = '" + jsontoken.numerosolicitud + "'";
 
                     conn.iniciaCommand(strSQL);
@@ -239,6 +239,7 @@ namespace APISICA.Controllers
                         conn.iniciaCommand(strSQL);
                         conn.ejecutarQuery();
                     }
+                    */
                 }
 
                 conn.cerrar();
@@ -272,10 +273,10 @@ namespace APISICA.Controllers
             try
             {
                 conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                conn.conectar();
                 int cont, iddepartamento, iddocumento, iddetalle, idclasificacion, idproducto, idcentrocosto;
                 string concat = "";
                 string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE NOMBRE_DEPARTAMENTO = '" + jsontoken.strdepartamento + "'";
-                conn.conectar();
                 conn.iniciaCommand(strSQL);
                 iddepartamento = conn.ejecutarQueryEscalar();
                 if (iddepartamento > 0)
@@ -288,7 +289,7 @@ namespace APISICA.Controllers
                 }
 
                 strSQL = "SELECT ID_DOCUMENTO FROM ADMIN.LDOCUMENTO WHERE NOMBRE_DOCUMENTO = '" + jsontoken.strdocumento + "' AND ID_DEPARTAMENTO_FK = " + iddepartamento;
-                conn.conectar();
+                //conn.conectar();
                 conn.iniciaCommand(strSQL);
                 iddocumento = conn.ejecutarQueryEscalar();
                 if (iddocumento > 0)
@@ -301,7 +302,7 @@ namespace APISICA.Controllers
                 }
 
                 strSQL = "SELECT ID_DETALLE FROM ADMIN.LDETALLE WHERE NOMBRE_DETALLE = '" + jsontoken.strdetalle + "' AND ID_DOCUMENTO_FK = " + iddocumento;
-                conn.conectar();
+                //conn.conectar();
                 conn.iniciaCommand(strSQL);
                 iddetalle = conn.ejecutarQueryEscalar();
                 if (iddetalle > 0)
@@ -314,7 +315,7 @@ namespace APISICA.Controllers
                 }
 
                 strSQL = "SELECT ID_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE NOMBRE_CLASIFICACION = '" + jsontoken.strclasificacion + "'";
-                conn.conectar();
+               // conn.conectar();
                 conn.iniciaCommand(strSQL);
                 idclasificacion = conn.ejecutarQueryEscalar();
                 if (idclasificacion > 0)
@@ -327,7 +328,7 @@ namespace APISICA.Controllers
                 }
 
                 strSQL = "SELECT ID_PRODUCTO FROM ADMIN.LPRODUCTO WHERE NOMBRE_PRODUCTO = '" + jsontoken.strproducto + "'";
-                conn.conectar();
+                //conn.conectar();
                 conn.iniciaCommand(strSQL);
                 idproducto = conn.ejecutarQueryEscalar();
                 if (idproducto > 0)
@@ -340,7 +341,7 @@ namespace APISICA.Controllers
                 }
 
                 strSQL = "SELECT ID_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO WHERE NOMBRE_CENTRO_COSTO = '" + jsontoken.strcentrocosto + "'";
-                conn.conectar();
+                //conn.conectar();
                 conn.iniciaCommand(strSQL);
                 idcentrocosto = conn.ejecutarQueryEscalar();
                 if (idcentrocosto > 0)
@@ -370,9 +371,8 @@ namespace APISICA.Controllers
                     strSQL += "AND FECHA_HASTA = TO_DATE('" + jsontoken.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS')";
                 }
 
-                //return Ok(strSQL);
 
-                conn.conectar();
+                //conn.conectar();
                 conn.iniciaCommand(strSQL);
                 cont = conn.ejecutarQueryEscalar();
                 conn.cerrar();
@@ -546,10 +546,11 @@ namespace APISICA.Controllers
                 return Unauthorized("Sesion no encontrada");
             }
             Conexion conn = new Conexion();
+            string strSQL = "";
             try
             {
                 conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
+                strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
                                 CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                                      WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
                                      ELSE UBI.NOMBRE_UBICACION
@@ -557,7 +558,9 @@ namespace APISICA.Controllers
                                 NUMERO_DE_CAJA AS CAJA, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD,
                                 TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LPROD.NOMBRE_PRODUCTO AS PRODUCTO, LDEP.NOMBRE_DEPARTAMENTO AS DEP,
-                                LDOC.NOMBRE_DOCUMENTO AS DOC, LDET.NOMBRE_DETALLE AS DET, LE.NOMBRE_ESTADO AS ESTADO";
+                                LDOC.NOMBRE_DOCUMENTO AS DOC, LDET.NOMBRE_DETALLE AS DET, LE.NOMBRE_ESTADO AS ESTADO,
+                                NUMERO_DE_CAJA || CODIGO_SOCIO || NOMBRE_SOCIO || NUMEROSOLICITUD || TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') ||
+                                TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy')  AS CONCAT";
                 strSQL += " FROM ADMIN.INVENTARIO_GENERAL IG";
                 strSQL += " LEFT JOIN ADMIN.LESTADO LE ON LE.ID_ESTADO = IG.ID_ESTADO_FK";
                 strSQL += " LEFT JOIN ADMIN.LDOCUMENTO DOC ON DOC.ID_DOCUMENTO = IG.ID_DOCUMENTO_FK";
@@ -569,7 +572,7 @@ namespace APISICA.Controllers
                 strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON LDEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK";
                 strSQL += " LEFT JOIN ADMIN.LDETALLE LDET ON LDET.ID_DETALLE = IG.ID_DETALLE_FK";
                 strSQL += " LEFT JOIN ADMIN.LPRODUCTO LPROD ON LPROD.ID_PRODUCTO = IG.ID_PRODUCTO_FK";
-                strSQL += " WHERE UBI.ID_UBICACION = 8"; //Valija
+                strSQL += " WHERE UBI.ID_UBICACION = " + jsontoken.idubicacion; //Valija
 
                 conn.conectar();
                 conn.iniciaCommand(strSQL);
@@ -583,7 +586,7 @@ namespace APISICA.Controllers
             catch (Exception ex)
             {
                 conn.cerrar();
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + strSQL);
             }
         }
         [HttpPost("buscarpendiente")]
@@ -723,7 +726,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("ValijaMover")]
-        public IActionResult ValijaOK(Class.JsonToken jsontoken)
+        public IActionResult ValijaMover(Class.JsonToken jsontoken)
         {
             Cuenta cuenta;
             try
@@ -743,16 +746,17 @@ namespace APISICA.Controllers
             try
             {
                 conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                string strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_UBICACION_FK = " + jsontoken.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
-
                 conn.conectar();
+                string strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
+                strSQL += " VALUES (" + jsontoken.idinventario + ", (SELECT ID_USUARIO_POSEE_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "), " + cuenta.IdUser + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, (SELECT ID_UBICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "), " + jsontoken.idubicacionrecibe + ", " + cuenta.IdUser + ", SYSDATE)";
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
 
-                strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_AREA_ENTREGA_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK)";
-                strSQL += " VALUES (" + jsontoken.idinventario + ", " + cuenta.IdUser + ", " + jsontoken.idareaentrega + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, " + jsontoken.idubicacionentrega + ", " + jsontoken.idubicacionrecibe + ")";
+                strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + jsontoken.idestado + ", ID_UBICACION_FK = " + jsontoken.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
+
                 conn.iniciaCommand(strSQL);
                 conn.ejecutarQuery();
+
 
                 strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsontoken.idinventario + "";
                 conn.iniciaCommand(strSQL);
@@ -804,8 +808,8 @@ namespace APISICA.Controllers
                     conn.iniciaCommand(strSQL);
                     conn.ejecutarQuery();
 
-                    strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_AREA_ENTREGA_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK)";
-                    strSQL += " VALUES (" + jsontoken.idinventario + ", " + cuenta.IdUser + ", " + jsontoken.idareaentrega + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, " + jsontoken.idubicacionentrega + ", " + jsontoken.idubicacionrecibe + ")";
+                    strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_AREA_ENTREGA_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
+                    strSQL += " VALUES (" + jsontoken.idinventario + ", " + cuenta.IdUser + ", " + jsontoken.idareaentrega + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "', 1, 0, " + jsontoken.idubicacionentrega + ", " + jsontoken.idubicacionrecibe + ", " + cuenta.IdUser + ", SYSDATE)";
                     conn.iniciaCommand(strSQL);
                     conn.ejecutarQuery();
 
