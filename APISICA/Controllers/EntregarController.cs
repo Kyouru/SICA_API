@@ -19,24 +19,28 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("buscar")]
-        public IActionResult Buscar(Class.JsonToken jsontoken)
+        public IActionResult Buscar(Class.JsonBody jsonbody)
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,TO_CHAR(IG.FECHA_REGISTRO, 'DD/MM/YYYY') AS REGISTRO, EST.NOMBRE_ESTADO AS ESTADO,
+                string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,TO_CHAR(IG.FECHA_REGISTRO, 'DD/MM/YYYY') AS REGISTRO, EST.NOMBRE_ESTADO AS ESTADO,
                         CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                              WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
                              ELSE UBI.NOMBRE_UBICACION
@@ -44,8 +48,8 @@ namespace APISICA.Controllers
                         NUMERO_DE_CAJA AS CAJA,
                         LDEP.NOMBRE_DEPARTAMENTO AS DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO AS DOCUMENTO, LDET.NOMBRE_DETALLE AS DETALLE,
                         TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA";
-            strSQL += " FROM ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.TMP_CARRITO TC ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK";
-            strSQL += @"    LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
+                strSQL += " FROM ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.TMP_CARRITO TC ON IG.ID_INVENTARIO_GENERAL = TC.ID_INVENTARIO_GENERAL_FK";
+                strSQL += @"    LEFT JOIN ADMIN.LDEPARTAMENTO LDEP
                                 ON IG.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
                             LEFT JOIN ADMIN.LDOCUMENTO LDOC
                                 ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
@@ -65,86 +69,97 @@ namespace APISICA.Controllers
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
                             LEFT JOIN ADMIN.LESTADO EST
                                 ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
-            strSQL += " WHERE TC.ID_TMP_CARRITO IS NULL";
-            strSQL += " AND UBI.PRESTAR = 1 ";
+                strSQL += " WHERE TC.ID_TMP_CARRITO IS NULL";
+                strSQL += " AND UBI.PRESTAR = 1 ";
 
-            if (jsontoken.busquedalibre != "")
-                strSQL += " AND DESC_CONCAT LIKE '%" + jsontoken.busquedalibre + "%'";
-            if (jsontoken.entransito == 0)
-                strSQL += " AND ID_ESTADO_FK <> " + _configuration.GetSection("Estados:Transito").Value;
+                if (jsonbody.busquedalibre != "")
+                    strSQL += " AND DESC_CONCAT LIKE '%" + jsonbody.busquedalibre + "%'";
+                if (jsonbody.entransito == 0)
+                    strSQL += " AND ID_ESTADO_FK <> " + _configuration.GetSection("Estados:Transito").Value;
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
         [HttpPost("entregar")]
-        public IActionResult Entregar(Class.JsonToken jsontoken)
+        public IActionResult Entregar(Class.JsonBody jsonbody)
         {
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (cuenta.IdUser <= 0)
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (cuenta.IdUser <= 0)
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
 
-            string strSQL = "";
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsontoken.idinventario;
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
+                string strSQL = "";
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario;
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
 
-                strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_INVENTARIO_GENERAL_FK,
+                    strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_INVENTARIO_GENERAL_FK,
                             FECHA_INICIO, OBSERVACION, FECHA_FIN, RECIBIDO, ANULADO, USUARIO, FECHA)
-                            VALUES ((SELECT ID_UBICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "), " + jsontoken.idubicacionrecibe + ", " + cuenta.IdUser + ", " + jsontoken.idrecibe + ", " + jsontoken.idinventario + ", TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsontoken.observacion + "',";
-                strSQL += " TO_DATE('" + jsontoken.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0, " + cuenta.IdUser + ", SYSDATE)";
+                            VALUES ((SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "), " + jsonbody.idubicacionrecibe + ", " + cuenta.IdUser + ", " + jsonbody.idrecibe + ", " + jsonbody.idinventario + ", TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsonbody.observacion + "',";
+                    strSQL += " TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0, " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
 
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
+                    conn.EjecutarQuery(strSQL);
 
-                strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + jsontoken.idestado + ", ID_UBICACION_FK = " + jsontoken.idubicacionrecibe + ", ID_USUARIO_POSEE_FK = " + jsontoken.idrecibe;
-                strSQL += " WHERE ID_INVENTARIO_GENERAL = " + jsontoken.idinventario + "";
+                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + jsonbody.idestado + ", ID_UBICACION_FK = " + jsonbody.idubicacionrecibe + ", ID_USUARIO_POSEE_FK = " + jsonbody.idrecibe;
+                    strSQL += " WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
 
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
+                    conn.EjecutarQuery(strSQL);
 
 
-                conn.cerrar();
+                    conn.Cerrar();
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message + "\n" + strSQL);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message + "\n" + strSQL);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
     }
 }

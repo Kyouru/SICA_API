@@ -19,25 +19,29 @@ namespace APISICA.Controllers
         }
 
 
-        [HttpPost("listaconcat")]
-        public IActionResult ListaConcat(Class.JsonToken jsontoken)
+        [HttpGet("listaconcat")]
+        public IActionResult ListaConcat()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = @"SELECT LDEP.NOMBRE_DEPARTAMENTO || LDOC.NOMBRE_DOCUMENTO || LDET.NOMBRE_DETALLE AS CONCAT,
+                string strSQL = @"SELECT LDEP.NOMBRE_DEPARTAMENTO || LDOC.NOMBRE_DOCUMENTO || LDET.NOMBRE_DETALLE AS CONCAT,
                                 LDEP.ID_DEPARTAMENTO || ';' || LDOC.ID_DOCUMENTO || ';' || LDET.ID_DETALLE AS ID,
                                 FROM ADMIN.LDEPARTAMENTO LDEP
                                 LEFT JOIN ADMIN.LDOCUMENTO LDOC ON LDEP.ID_DEPARTAMENTO = LDOC.ID_DEPARTAMENTO_FK
@@ -46,511 +50,609 @@ namespace APISICA.Controllers
                                     AND LDOC.ANULADO = 0
                                     AND LDET.ANULADO = 0";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
-        [HttpPost("listadepartamento")]
-        public IActionResult ListaDepartamento(Class.JsonToken jsontoken)
+        [HttpGet("listadepartamento")]
+        public IActionResult ListaDepartamento()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN DESC";
+                string strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN DESC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
         [HttpPost("listadocumento")]
-        public IActionResult ListaDocumento(Class.JsonToken jsontoken)
+        public IActionResult ListaDocumento(Class.JsonBody jsonbody)
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsontoken.iddepartamento + " ORDER BY ORDEN DESC";
+                string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN DESC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
         [HttpPost("listadetalle")]
-        public IActionResult ListaDetalle(Class.JsonToken jsontoken)
+        public IActionResult ListaDetalle(Class.JsonBody jsonbody)
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT ID_DETALLE, NOMBRE_DETALLE FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsontoken.iddocumento + " ORDER BY ORDEN ASC";
+                string strSQL = "SELECT ID_DETALLE, NOMBRE_DETALLE FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
-        [HttpPost("listaclasificacion")]
-        public IActionResult ListaClasificacion(Class.JsonToken jsontoken)
+        [HttpGet("listaclasificacion")]
+        public IActionResult ListaClasificacion()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                string strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE ANULADO = 0 ORDER BY ORDEN ASC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
-        [HttpPost("listaproducto")]
-        public IActionResult ListaProducto(Class.JsonToken jsontoken)
+        [HttpGet("listaproducto")]
+        public IActionResult ListaProducto()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                string strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
-        [HttpPost("listapendientes")]
-        public IActionResult ListaPendientes(Class.JsonToken jsontoken)
+        [HttpGet("listapendientes")]
+        public IActionResult ListaPendientes()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
+                string strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
-        [HttpPost("listacentrocosto")]
-        public IActionResult ListaCentroCosto(Class.JsonToken jsontoken)
+        [HttpGet("listacentrocosto")]
+        public IActionResult ListaCentroCosto()
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO";
+                string strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO";
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
         }
 
         [HttpPost("listausuarioexterno")]
-        public IActionResult ListaUsuariosExternos(Class.JsonToken jsontoken)
+        public IActionResult ListaUsuariosExternos(Class.JsonBody jsonbody)
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
-
-            string strSQL = ""; ;
-            if (jsontoken.tiposeleccionarusuario == 1)
-            {
-                strSQL = "SELECT UX.ID_USUARIO_EXTERNO, UX.NOMBRE_USUARIO_EXTERNO, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
-                strSQL += "WHERE UX.ANULADO = 0 ORDER BY UX.ORDEN ASC";
-            }
-            else
-            {
-                strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
-            }
-
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
-
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
-            }
-            catch (Exception ex)
-            {
-                conn.cerrar();
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("listaubicacion")]
-        public IActionResult ListaUbicacion(Class.JsonToken jsontoken)
-        {
-            DataTable dt;
-            Cuenta cuenta;
-            try
-            {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
-
-            string strSQL = ""; ;
-            if (jsontoken.tiposeleccionarubicacion == 1)
-            {
-                strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
-                strSQL += "WHERE UBI.ANULADO = 0 AND PRESTAR = 1 ORDER BY UBI.ORDEN ASC";
-            }
-            else
-            {
-                strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
-            }
-
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
-
-                string json = JsonConvert.SerializeObject(dt);
-                return Ok(json);
-            }
-            catch (Exception ex)
-            {
-                conn.cerrar();
-                return BadRequest(ex.Message);
-            }
-        }
-
-
-        [HttpPost("pendienteconfirmarrecepcion")]
-        public IActionResult pendienteConfirmarRecepcion(Class.JsonToken jsontoken)
-        {
-            Cuenta cuenta;
-            try
-            {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("Usercheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
-
-            string strSQL = "SELECT COUNT(*) FROM ADMIN.INVENTARIO_HISTORICO WHERE RECIBIDO = 0 AND ANULADO = 0 AND ID_USUARIO_RECIBE_FK = " + cuenta.IdUser;
-
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                int i = conn.ejecutarQueryEscalar();
-                conn.cerrar();
-                return Ok(i.ToString());
-            }
-            catch (Exception ex)
-            {
-                conn.cerrar();
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("validarubicacion")]
-        public IActionResult ValidarUbicacion(Class.JsonToken jsontoken)
-        {
-            Cuenta cuenta;
-            try
-            {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("Usercheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesión no encontrada");
-            }
-
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                string strSQL = "SELECT NVL(ID_UBICACION, 0) FROM UBICACION UBI WHERE UPPER(NOMBRE_UBICACION) = UPPER('" + jsontoken.strubicacion + "') AND ANULADO = 0";
-                conn.iniciaCommand(strSQL);
-                int i = conn.ejecutarQueryEscalar();
-                conn.cerrar();
-
-                if (i > 0)
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
                 {
-                    return Ok(i.ToString());
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = ""; ;
+                if (jsonbody.tiposeleccionarusuario == 1)
+                {
+                    strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
+                    strSQL += "WHERE UX.ANULADO = 0 AND UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + jsonbody.busquedalibre + "%' ORDER BY UX.ORDEN ASC";
                 }
                 else
                 {
-                    return BadRequest("Ubicación Inválida");
+                    strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
+                }
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
+
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+            
+        }
+
+        [HttpPost("listaubicacion")]
+        public IActionResult ListaUbicacion(Class.JsonBody jsonbody)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = ""; ;
+                if (jsonbody.tiposeleccionarubicacion == 1)
+                {
+                    strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
+                    strSQL += "WHERE UBI.ANULADO = 0 AND PRESTAR = 1 ORDER BY UBI.ORDEN ASC";
+                }
+                else
+                {
+                    strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
+                }
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
+
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+            
+        }
+
+
+        [HttpGet("pendienteconfirmarrecepcion")]
+        public IActionResult PendienteConfirmarRecepcion()
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("Usercheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "SELECT COUNT(*) FROM ADMIN.INVENTARIO_HISTORICO WHERE RECIBIDO = 0 AND ANULADO = 0 AND ID_USUARIO_RECIBE_FK = " + cuenta.IdUser;
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    int i = conn.EjecutarQueryEscalar(strSQL);
+                    conn.Cerrar();
+                    return Ok(i.ToString());
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+            
+        }
+
+        [HttpPost("validarubicacion")]
+        public IActionResult ValidarUbicacion(Class.JsonBody jsonbody)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("Usercheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesión no encontrada");
+                }
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    string strSQL = "SELECT NVL(ID_UBICACION, 0) FROM ADMIN.UBICACION UBI WHERE UPPER(NOMBRE_UBICACION) = UPPER('" + jsonbody.strubicacion + "') AND ANULADO = 0";
+                    int i = conn.EjecutarQueryEscalar(strSQL);
+                    conn.Cerrar();
+
+                    if (i > 0)
+                    {
+                        return Ok(i.ToString());
+                    }
+                    else
+                    {
+                        return BadRequest("Ubicación Inválida");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+            
         }
 
         [HttpPost("obtenercaja")]
-        public IActionResult ObtenerCaja(Class.JsonToken jsontoken)
+        public IActionResult ObtenerCaja(Class.JsonBody jsonbody)
         {
-            DataTable dt;
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (cuenta.IdUser <= 0)
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (cuenta.IdUser <= 0)
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "";
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
+                string strSQL;
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
 
-                strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID, ID_UBICACION, EST.NOMBRE_ESTADO AS ESTADO,
+                    strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID, ID_UBICACION, EST.NOMBRE_ESTADO AS ESTADO,
                         CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                              WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
                              ELSE UBI.NOMBRE_UBICACION
@@ -579,66 +681,81 @@ namespace APISICA.Controllers
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
                             LEFT JOIN ADMIN.LESTADO EST
                                 ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
-                strSQL += " WHERE NUMERO_DE_CAJA = '" + jsontoken.numerocaja + "'";
+                    strSQL += " WHERE NUMERO_DE_CAJA = '" + jsonbody.numerocaja + "'";
 
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
 
-                dt = conn.llenarDataTable();
-                conn.cerrar();
-
-                if (dt.Rows.Count > 0)
-                {
-                    string json = JsonConvert.SerializeObject(dt);
-                    return Ok(json);
+                    if (dt.Rows.Count > 0)
+                    {
+                        string json = JsonConvert.SerializeObject(dt);
+                        return Ok(json);
+                    }
+                    else
+                    {
+                        return BadRequest("Caja no Encontrada");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return BadRequest("Caja no Encontrada");
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
                 }
-
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
         }
 
         [HttpPost("iddepartamento")]
-        public IActionResult IdDepartamento(Class.JsonToken jsontoken)
+        public IActionResult IdDepartamento(Class.JsonBody jsonbody)
         {
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), jsontoken.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 AND NOMBRE_DEPARTAMENTO = " + jsontoken.strdepartamento;
+                string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 AND NOMBRE_DEPARTAMENTO = " + jsonbody.strdepartamento;
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                int id = conn.ejecutarQueryEscalar();
-                conn.cerrar();
-                return Ok(id);
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    int id = conn.EjecutarQueryEscalar(strSQL);
+                    conn.Cerrar();
+                    return Ok(id);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
+        }
+
+        [HttpGet("prueba")]
+        public IActionResult Prueba()
+        {
+            return Ok("Phonk");
         }
     }
 }

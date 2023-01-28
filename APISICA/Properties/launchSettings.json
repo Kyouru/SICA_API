@@ -1,5 +1,6 @@
 {
   "profiles": {
+    /*
     "APISICA": {
       "commandName": "Project",
       "launchBrowser": true,
@@ -17,12 +18,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
+    },*/
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "publishAllPorts": true,
+      //"publishAllPorts": true,
       "useSSL": true,
       "httpPort": 5000,
       "sslPort": 5001

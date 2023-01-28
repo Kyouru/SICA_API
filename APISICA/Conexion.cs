@@ -24,7 +24,7 @@ namespace APISICA
 
         }
 
-        public bool conectar()
+        public bool Conectar()
         {
             if (connection != null)
             {
@@ -46,59 +46,32 @@ namespace APISICA
             return true;
         }
 
-        public bool iniciaCommand(string strSQL)
+        public bool EjecutarQuery(string strSQL)
         {
             command = new OracleCommand(strSQL, connection);
-            return true;
-        }
-
-        public bool agregarParametroCommand(string nombre, string valor)
-        {
-            command.Parameters.Add(nombre, valor);
-            return true;
-        }
-
-        public bool agregarParametroCommandInt(string nombre, int valor)
-        {
-            OracleParameter parameter = new OracleParameter();
-            parameter.OracleDbType = OracleDbType.Int32;
-            parameter.Value = valor;
-            command.Parameters.Add(nombre, parameter);
-            return true;
-        }
-
-        public bool agregarParametroCommandDate(string nombre, string valor)
-        {
-            DateTime fecha = DateTime.Parse(valor);
-            OracleParameter parameter = new OracleParameter();
-            parameter.OracleDbType = OracleDbType.Date;
-            parameter.Value = fecha;
-            command.Parameters.Add(nombre, parameter);
-            return true;
-        }
-
-        public bool ejecutarQuery()
-        {
             command.ExecuteNonQuery();
             return true;
         }
 
-        public DataTable llenarDataTable()
+        public DataTable LlenarDataTable(string strSQL)
         {
             DataTable dt = new DataTable();
+            command = new OracleCommand(strSQL, connection);
+            //command.ExecuteNonQuery();
             reader = command.ExecuteReader();
             dt.Load(reader);
             return dt;
         }
 
-        public int ejecutarQueryEscalar()
+        public int EjecutarQueryEscalar(string strSQL)
         {
             int resp;
             try
             {
+                command = new OracleCommand(strSQL, connection);
                 if (!(command.ExecuteScalar() is null))
                 {
-                    string ret = command.ExecuteScalar().ToString();
+                    string ret = command.ExecuteScalar().ToString() ?? "-1";
                     resp = Convert.ToInt32(ret);
                 }
                 else
@@ -128,7 +101,7 @@ namespace APISICA
             }
         }
 
-        public void cerrar()
+        public void Cerrar()
         {
             try
             {

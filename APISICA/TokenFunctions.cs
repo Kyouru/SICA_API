@@ -22,17 +22,15 @@ namespace APISICA
             DataTable dt = new DataTable();
             try
             {
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
-                cuenta.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString());
-                cuenta.Permiso = dt.Rows[0]["CONNUSER"].ToString();
+                conn.Conectar();
+                dt = conn.LlenarDataTable(strSQL);
+                conn.Cerrar();
+                cuenta.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "NULL");
+                cuenta.Permiso = dt.Rows[0]["CONNUSER"].ToString() ?? "NULL";
             }
             catch
             {
-                conn.cerrar();
+                conn.Cerrar();
                 cuenta.IdUser = -1;
                 cuenta.Permiso = "No";
             }

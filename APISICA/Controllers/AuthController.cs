@@ -49,16 +49,15 @@ namespace APISICA.Controllers
 
                 string strSQL = "UPDATE ADMIN.USUARIO SET CAMBIAR_PASSWORD = 0, PASSWORDHASH = '" + passwordHash + "', PASSWORDSALT = '" + passwordSalt + "' WHERE ID_USUARIO = " + cuenta.IdUser;
 
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                conn.cerrar();
+                conn.Conectar();
+                conn.EjecutarQuery(strSQL);
+                conn.Cerrar();
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                conn.cerrar();
+                conn.Cerrar();
                 return BadRequest(ex.Message);
             }
         }
@@ -66,26 +65,25 @@ namespace APISICA.Controllers
         [HttpPost("login")]
         public IActionResult Login(User request)
         {
-            DataTable dt = new DataTable("User");
-            string strSQL = "SELECT U.PASSWORDHASH, U.PASSWORDSALT, U.ID_AREA_FK, U.ID_USUARIO, U.CAMBIAR_PASSWORD, U.ACCESO_PERMITIDO, U.CERRAR_SESION, NVL(P.BUSQUEDA, 0) AS BUSQUEDA, NVL(P.BUSQUEDA_HISTORICO, 0) AS BUSQUEDA_HISTORICO, NVL(P.BUSQUEDA_EDITAR, 0) AS BUSQUEDA_EDITAR, NVL(P.MOVER, 0) MOVER, NVL(P.MOVER_EXPEDIENTE, 0) MOVER_EXPEDIENTE, NVL(P.MOVER_DOCUMENTO, 0) MOVER_DOCUMENTO, NVL(P.MOVER_MASIVO, 0) MOVER_MASIVO, NVL(P.VALIJA, 0) VALIJA, NVL(P.VALIJA_NUEVO, 0) VALIJA_NUEVO , NVL(P.VALIJA_REINGRESO, 0) VALIJA_REINGRESO, NVL(P.VALIJA_CONFIRMAR, 0) VALIJA_CONFIRMAR, NVL(P.VALIJA_MANUAL, 0) VALIJA_MANUAL, NVL(P.PAGARE, 0) PAGARE, NVL(P.PAGARE_BUSCAR, 0) PAGARE_BUSCAR, NVL(P.PAGARE_RECIBIR, 0) PAGARE_RECIBIR, NVL(P.PAGARE_ENTREGAR, 0) PAGARE_ENTREGAR, NVL(P.LETRA, 0) LETRA, NVL(P.LETRA_NUEVO, 0) LETRA_NUEVO, NVL(P.LETRA_ENTREGAR, 0) LETRA_ENTREGAR, NVL(P.LETRA_REINGRESO, 0) LETRA_REINGRESO, NVL(P.LETRA_BUSCAR, 0) LETRA_BUSCAR, NVL(P.IRONMOUNTAIN, 0) IRONMOUNTAIN, NVL(P.IRONMOUNTAIN_SOLICITAR, 0) IRONMOUNTAIN_SOLICITAR, NVL(P.IRONMOUNTAIN_RECIBIR, 0) IRONMOUNTAIN_RECIBIR, NVL(P.IRONMOUNTAIN_ARMAR, 0) IRONMOUNTAIN_ARMAR, NVL(P.IRONMOUNTAIN_ENVIAR, 0) IRONMOUNTAIN_ENVIAR, NVL(P.IRONMOUNTAIN_ENTREGAR, 0) IRONMOUNTAIN_ENTREGAR, NVL(P.IRONMOUNTAIN_CARGO, 0) IRONMOUNTAIN_CARGO, NVL(P.BOVEDA, 0) BOVEDA, NVL(P.BOVEDA_CAJA_RETIRAR, 0) BOVEDA_CAJA_RETIRAR, NVL(P.BOVEDA_CAJA_GUARDAR, 0) BOVEDA_CAJA_GUARDAR, NVL(P.BOVEDA_DOCUMENTO_RETIRAR, 0) BOVEDA_DOCUMENTO_RETIRAR, NVL(P.BOVEDA_DOCUMENTO_GUARDAR, 0) BOVEDA_DOCUMENTO_GUARDAR, NVL(P.IMPORTAR, 0) IMPORTAR, NVL(P.IMPORTAR_ACTIVAS, 0) IMPORTAR_ACTIVAS, NVL(P.IMPORTAR_PASIVAS, 0) IMPORTAR_PASIVAS, NVL(P.MANTENIMIENTO, 0) MANTENIMIENTO, NVL(P.MANTENIMIENTO_USUARIO_EXTERNO, 0) MANTENIMIENTO_USUARIO_EXTERNO, NVL(P.MANTENIMIENTO_SOCIO, 0) MANTENIMIENTO_SOCIO, NVL(P.MANTENIMIENTO_CREDITO, 0) MANTENIMIENTO_CREDITO, NVL(P.PENDIENTE, 0) PENDIENTE, NVL(P.PENDIENTE_REGULARIZAR, 0) PENDIENTE_REGULARIZAR, NVL(P.REPORTE, 0) REPORTE, NVL(P.REPORTE_CAJAS, 0) REPORTE_CAJAS, NVL(P.PRESTAR, 0) PRESTAR, NVL(P.PRESTAR_PRESTAR, 0) PRESTAR_PRESTAR, NVL(P.PRESTAR_RECIBIR, 0) PRESTAR_RECIBIR,  NVL(P.NIVEL, 0) AS NIVEL FROM ADMIN.USUARIO U LEFT JOIN ADMIN.PERMISO P ON U.ID_USUARIO = P.ID_USUARIO_FK WHERE U.NOMBRE_USUARIO = '" + request.Username + "'";
+            DataTable dt;
+            string strSQL = "SELECT U.PASSWORDHASH, U.PASSWORDSALT, U.ID_USUARIO, U.CAMBIAR_PASSWORD, U.ACCESO_PERMITIDO, U.CERRAR_SESION, NVL(P.BUSQUEDA, 0) AS BUSQUEDA, NVL(P.BUSQUEDA_HISTORICO, 0) AS BUSQUEDA_HISTORICO, NVL(P.BUSQUEDA_EDITAR, 0) AS BUSQUEDA_EDITAR, NVL(P.MOVER, 0) MOVER, NVL(P.MOVER_EXPEDIENTE, 0) MOVER_EXPEDIENTE, NVL(P.MOVER_DOCUMENTO, 0) MOVER_DOCUMENTO, NVL(P.MOVER_MASIVO, 0) MOVER_MASIVO, NVL(P.VALIJA, 0) VALIJA, NVL(P.VALIJA_NUEVO, 0) VALIJA_NUEVO , NVL(P.VALIJA_REINGRESO, 0) VALIJA_REINGRESO, NVL(P.VALIJA_CONFIRMAR, 0) VALIJA_CONFIRMAR, NVL(P.VALIJA_MANUAL, 0) VALIJA_MANUAL, NVL(P.PAGARE, 0) PAGARE, NVL(P.PAGARE_BUSCAR, 0) PAGARE_BUSCAR, NVL(P.PAGARE_RECIBIR, 0) PAGARE_RECIBIR, NVL(P.PAGARE_ENTREGAR, 0) PAGARE_ENTREGAR, NVL(P.LETRA, 0) LETRA, NVL(P.LETRA_NUEVO, 0) LETRA_NUEVO, NVL(P.LETRA_ENTREGAR, 0) LETRA_ENTREGAR, NVL(P.LETRA_REINGRESO, 0) LETRA_REINGRESO, NVL(P.LETRA_BUSCAR, 0) LETRA_BUSCAR, NVL(P.MANTENIMIENTO, 0) MANTENIMIENTO, NVL(P.MANTENIMIENTO_USUARIO_EXTERNO, 0) MANTENIMIENTO_USUARIO_EXTERNO, NVL(P.MANTENIMIENTO_SOCIO, 0) MANTENIMIENTO_SOCIO, NVL(P.MANTENIMIENTO_CREDITO, 0) MANTENIMIENTO_CREDITO, NVL(P.PENDIENTE, 0) PENDIENTE, NVL(P.PENDIENTE_REGULARIZAR, 0) PENDIENTE_REGULARIZAR, NVL(P.REPORTE, 0) REPORTE, NVL(P.REPORTE_CAJAS, 0) REPORTE_CAJAS, NVL(P.PRESTAR, 0) PRESTAR, NVL(P.PRESTAR_PRESTAR, 0) PRESTAR_PRESTAR, NVL(P.PRESTAR_RECIBIR, 0) PRESTAR_RECIBIR,  NVL(P.NIVEL, 0) AS NIVEL FROM ADMIN.USUARIO U LEFT JOIN ADMIN.PERMISO P ON U.ID_USUARIO = P.ID_USUARIO_FK WHERE U.NOMBRE_USUARIO = '" + request.Username + "'";
             string token;
             Conexion conn = new Conexion();
             try
             {
                 conn = new Conexion(_configuration.GetConnectionString("UserCheck"));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                dt = conn.llenarDataTable();
-                conn.cerrar();
+                conn.Conectar();
+                dt = conn.LlenarDataTable(strSQL);
 
                 if (dt.Rows.Count <= 0)
                 {
+                    conn.Cerrar();
                     return BadRequest("Usuario no Encontrado");
                 }
 
-                if (!VerifyPasswordHash(request.Password, dt.Rows[0]["PASSWORDHASH"].ToString(), dt.Rows[0]["PASSWORDSALT"].ToString()))
+                if (!VerifyPasswordHash(request.Password, dt.Rows[0]["PASSWORDHASH"].ToString() ?? "NULL", dt.Rows[0]["PASSWORDSALT"].ToString() ?? "NULL"))
                 {
+                    conn.Cerrar();
                     return BadRequest("Contraseña Errada");
                 }
 
@@ -93,15 +91,12 @@ namespace APISICA.Controllers
 
                 strSQL = "UPDATE ADMIN.USUARIO SET JWT = '" + token + "' WHERE NOMBRE_USUARIO = '" + request.Username + "'";
 
-                conn = new Conexion(_configuration.GetConnectionString("UserCheck"));
-                conn.conectar();
-                conn.iniciaCommand(strSQL);
-                conn.ejecutarQuery();
-                conn.cerrar();
+                conn.EjecutarQuery(strSQL);
+                conn.Cerrar();
             }
             catch (Exception ex)
             {
-                conn.cerrar();
+                conn.Cerrar();
                 return BadRequest(ex.Message);
             }
 
@@ -110,60 +105,44 @@ namespace APISICA.Controllers
                 UserData userdata = new UserData();
 
                 userdata.Username = request.Username;
-                userdata.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString());
-                userdata.IdArea = Int32.Parse(dt.Rows[0]["ID_AREA_FK"].ToString());
-                userdata.CambiarPassword = Int32.Parse(dt.Rows[0]["CAMBIAR_PASSWORD"].ToString());
-                userdata.AccesoPermitido = Int32.Parse(dt.Rows[0]["ACCESO_PERMITIDO"].ToString());
-                userdata.CerrarSesion = Int32.Parse(dt.Rows[0]["CERRAR_SESION"].ToString());
+                userdata.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "NULL");
+                userdata.CambiarPassword = Int32.Parse(dt.Rows[0]["CAMBIAR_PASSWORD"].ToString() ?? "NULL");
+                userdata.AccesoPermitido = Int32.Parse(dt.Rows[0]["ACCESO_PERMITIDO"].ToString() ?? "NULL");
+                userdata.CerrarSesion = Int32.Parse(dt.Rows[0]["CERRAR_SESION"].ToString() ?? "NULL");
 
-                userdata.auBusqueda = Int32.Parse(dt.Rows[0]["BUSQUEDA"].ToString());
-                userdata.auBusquedaHistorico = Int32.Parse(dt.Rows[0]["BUSQUEDA_HISTORICO"].ToString());
-                userdata.auBusquedaEditar = Int32.Parse(dt.Rows[0]["BUSQUEDA_EDITAR"].ToString());
-                userdata.auMover = Int32.Parse(dt.Rows[0]["MOVER"].ToString());
-                userdata.auMoverExpediente = Int32.Parse(dt.Rows[0]["MOVER_EXPEDIENTE"].ToString());
-                userdata.auMoverDocumento = Int32.Parse(dt.Rows[0]["MOVER_DOCUMENTO"].ToString());
-                userdata.auValija = Int32.Parse(dt.Rows[0]["VALIJA"].ToString());
-                userdata.auValijaNuevo = Int32.Parse(dt.Rows[0]["VALIJA_NUEVO"].ToString());
-                userdata.auValijaReingreso = Int32.Parse(dt.Rows[0]["VALIJA_REINGRESO"].ToString());
-                userdata.auValijaConfirmar = Int32.Parse(dt.Rows[0]["VALIJA_CONFIRMAR"].ToString());
-                userdata.auValijaManual = Int32.Parse(dt.Rows[0]["VALIJA_MANUAL"].ToString());
-                userdata.auPagare = Int32.Parse(dt.Rows[0]["PAGARE"].ToString());
-                userdata.auPagareBuscar = Int32.Parse(dt.Rows[0]["PAGARE_BUSCAR"].ToString());
-                userdata.auPagareRecibir = Int32.Parse(dt.Rows[0]["PAGARE_RECIBIR"].ToString());
-                userdata.auPagareEntregar = Int32.Parse(dt.Rows[0]["PAGARE_ENTREGAR"].ToString());
-                userdata.auLetra = Int32.Parse(dt.Rows[0]["LETRA"].ToString());
-                userdata.auLetraNuevo = Int32.Parse(dt.Rows[0]["LETRA_NUEVO"].ToString());
-                userdata.auLetraEntregar = Int32.Parse(dt.Rows[0]["LETRA_ENTREGAR"].ToString());
-                userdata.auLetraReingreso = Int32.Parse(dt.Rows[0]["LETRA_REINGRESO"].ToString());
-                userdata.auLetraBuscar = Int32.Parse(dt.Rows[0]["LETRA_BUSCAR"].ToString());
-                userdata.auIronMountain = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN"].ToString());
-                userdata.auIronMountainSolicitar = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_SOLICITAR"].ToString());
-                userdata.auIronMountainRecibir = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_RECIBIR"].ToString());
-                userdata.auIronMountainArmar = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_ARMAR"].ToString());
-                userdata.auIronMountainEnviar = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_ENVIAR"].ToString());
-                userdata.auIronMountainEntregar = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_ENTREGAR"].ToString());
-                userdata.auIronMountainCargo = Int32.Parse(dt.Rows[0]["IRONMOUNTAIN_CARGO"].ToString());
-                userdata.auBoveda = Int32.Parse(dt.Rows[0]["BOVEDA"].ToString());
-                userdata.auBovedaCajaRetirar = Int32.Parse(dt.Rows[0]["BOVEDA_CAJA_RETIRAR"].ToString());
-                userdata.auBovedaCajaGuardar = Int32.Parse(dt.Rows[0]["BOVEDA_CAJA_GUARDAR"].ToString());
-                userdata.auBovedaDocumentoRetirar = Int32.Parse(dt.Rows[0]["BOVEDA_DOCUMENTO_RETIRAR"].ToString());
-                userdata.auBovedaDocumentoGuardar = Int32.Parse(dt.Rows[0]["BOVEDA_DOCUMENTO_GUARDAR"].ToString());
-                userdata.auImportar = Int32.Parse(dt.Rows[0]["IMPORTAR"].ToString());
-                userdata.auImportarActivas = Int32.Parse(dt.Rows[0]["IMPORTAR_ACTIVAS"].ToString());
-                userdata.auImportarPasivas = Int32.Parse(dt.Rows[0]["IMPORTAR_PASIVAS"].ToString());
-                userdata.auMantenimiento = Int32.Parse(dt.Rows[0]["MANTENIMIENTO"].ToString());
-                userdata.auMantenimientoCredito = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_CREDITO"].ToString());
-                userdata.auMantenimientoUsuarioExterno = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_USUARIO_EXTERNO"].ToString());
-                userdata.auMantenimientoSocio = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_SOCIO"].ToString());
-                userdata.auPendiente = Int32.Parse(dt.Rows[0]["PENDIENTE"].ToString());
-                userdata.auPendienteRegularizar = Int32.Parse(dt.Rows[0]["PENDIENTE_REGULARIZAR"].ToString());
-                userdata.auReporte = Int32.Parse(dt.Rows[0]["REPORTE"].ToString());
-                userdata.auReporteCajas = Int32.Parse(dt.Rows[0]["REPORTE_CAJAS"].ToString());
-                userdata.auPrestar = Int32.Parse(dt.Rows[0]["PRESTAR"].ToString());
-                userdata.auPrestarPrestar = Int32.Parse(dt.Rows[0]["PRESTAR_PRESTAR"].ToString());
-                userdata.auPrestarRecibir = Int32.Parse(dt.Rows[0]["PRESTAR_RECIBIR"].ToString());
+                userdata.Busqueda = Int32.Parse(dt.Rows[0]["BUSQUEDA"].ToString() ?? "NULL");
+                userdata.BusquedaHistorico = Int32.Parse(dt.Rows[0]["BUSQUEDA_HISTORICO"].ToString() ?? "NULL");
+                userdata.BusquedaEditar = Int32.Parse(dt.Rows[0]["BUSQUEDA_EDITAR"].ToString() ?? "NULL");
+                userdata.Mover = Int32.Parse(dt.Rows[0]["MOVER"].ToString() ?? "NULL");
+                userdata.MoverExpediente = Int32.Parse(dt.Rows[0]["MOVER_EXPEDIENTE"].ToString() ?? "NULL");
+                userdata.MoverDocumento = Int32.Parse(dt.Rows[0]["MOVER_DOCUMENTO"].ToString() ?? "NULL");
+                userdata.Valija = Int32.Parse(dt.Rows[0]["VALIJA"].ToString() ?? "NULL");
+                userdata.ValijaNuevo = Int32.Parse(dt.Rows[0]["VALIJA_NUEVO"].ToString() ?? "NULL");
+                userdata.ValijaReingreso = Int32.Parse(dt.Rows[0]["VALIJA_REINGRESO"].ToString() ?? "NULL");
+                userdata.ValijaConfirmar = Int32.Parse(dt.Rows[0]["VALIJA_CONFIRMAR"].ToString() ?? "NULL");
+                userdata.ValijaManual = Int32.Parse(dt.Rows[0]["VALIJA_MANUAL"].ToString() ?? "NULL");
+                userdata.Pagare = Int32.Parse(dt.Rows[0]["PAGARE"].ToString() ?? "NULL");
+                userdata.PagareBuscar = Int32.Parse(dt.Rows[0]["PAGARE_BUSCAR"].ToString() ?? "NULL");
+                userdata.PagareRecibir = Int32.Parse(dt.Rows[0]["PAGARE_RECIBIR"].ToString() ?? "NULL");
+                userdata.PagareEntregar = Int32.Parse(dt.Rows[0]["PAGARE_ENTREGAR"].ToString() ?? "NULL");
+                userdata.Letra = Int32.Parse(dt.Rows[0]["LETRA"].ToString() ?? "NULL");
+                userdata.LetraNuevo = Int32.Parse(dt.Rows[0]["LETRA_NUEVO"].ToString() ?? "NULL");
+                userdata.LetraEntregar = Int32.Parse(dt.Rows[0]["LETRA_ENTREGAR"].ToString() ?? "NULL");
+                userdata.LetraReingreso = Int32.Parse(dt.Rows[0]["LETRA_REINGRESO"].ToString() ?? "NULL");
+                userdata.LetraBuscar = Int32.Parse(dt.Rows[0]["LETRA_BUSCAR"].ToString() ?? "NULL");
+                userdata.Mantenimiento = Int32.Parse(dt.Rows[0]["MANTENIMIENTO"].ToString() ?? "NULL");
+                userdata.MantenimientoCredito = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_CREDITO"].ToString() ?? "NULL");
+                userdata.MantenimientoUsuarioExterno = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_USUARIO_EXTERNO"].ToString() ?? "NULL");
+                userdata.MantenimientoSocio = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_SOCIO"].ToString() ?? "NULL");
+                userdata.Pendiente = Int32.Parse(dt.Rows[0]["PENDIENTE"].ToString() ?? "NULL");
+                userdata.PendienteRegularizar = Int32.Parse(dt.Rows[0]["PENDIENTE_REGULARIZAR"].ToString() ?? "NULL");
+                userdata.Reporte = Int32.Parse(dt.Rows[0]["REPORTE"].ToString() ?? "NULL");
+                userdata.ReporteCajas = Int32.Parse(dt.Rows[0]["REPORTE_CAJAS"].ToString() ?? "NULL");
+                userdata.Prestar = Int32.Parse(dt.Rows[0]["PRESTAR"].ToString() ?? "NULL");
+                userdata.PrestarPrestar = Int32.Parse(dt.Rows[0]["PRESTAR_PRESTAR"].ToString() ?? "NULL");
+                userdata.PrestarRecibir = Int32.Parse(dt.Rows[0]["PRESTAR_RECIBIR"].ToString() ?? "NULL");
 
-                userdata.auNivel = Int32.Parse(dt.Rows[0]["NIVEL"].ToString());
+                userdata.Nivel = Int32.Parse(dt.Rows[0]["NIVEL"].ToString() ?? "NULL");
 
                 userdata.Token = token;
 
@@ -197,7 +176,7 @@ namespace APISICA.Controllers
             return jwt;
         }
 
-        private void CreatePasswordHash (string password, out string passwordHash, out string passwordSalt)
+        private static void CreatePasswordHash (string password, out string passwordHash, out string passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -206,7 +185,7 @@ namespace APISICA.Controllers
             }
         }
 
-        private bool VerifyPasswordHash(string password, string passwordHash, string passwordSalt)
+        private static bool VerifyPasswordHash(string password, string passwordHash, string passwordSalt)
         {
             using (var hmac = new HMACSHA512(Convert.FromBase64String(passwordSalt)))
             {
@@ -214,9 +193,9 @@ namespace APISICA.Controllers
                 return computedHash.SequenceEqual(Convert.FromBase64String(passwordHash));
             }
         }
-
+        /*
         [HttpPost("getpasswordhash")]
-        public string getPasswordHash(string password)
+        public string GetPasswordHash(string password)
         {
             try
             {
@@ -233,5 +212,6 @@ namespace APISICA.Controllers
             }
 
         }
+        */
     }
 }
