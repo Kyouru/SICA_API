@@ -378,7 +378,8 @@ namespace APISICA.Controllers
                                 END AS RECIBE,
                                 TO_CHAR(IH.FECHA_INICIO, 'dd/MM/yyyy HH24:MI:SS') AS FECHA_ENTREGA,
                                 TO_CHAR(IH.FECHA_FIN, 'dd/MM/yyyy HH24:MI:SS') AS FECHA_RECIBE,
-                                IA.FECHA
+                                IA.FECHA,
+                                99 AS PRIORIDAD
                                 FROM ADMIN.INVENTARIO_HISTORICO IH LEFT JOIN ADMIN.INVENTARIO_ANTERIOR IA ON IH.ID_INVENTARIO_ANTERIOR_FK = IA.ID_INVENTARIO_ANTERIOR
                                     LEFT JOIN ADMIN.USUARIO U1 ON IH.ID_USUARIO_ENTREGA_FK = U1.ID_USUARIO
                                     LEFT JOIN ADMIN.USUARIO U2 ON IH.ID_USUARIO_RECIBE_FK = U2.ID_USUARIO
@@ -451,7 +452,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON IA.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IA.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IA.ID_DETALLE_FK = LDET.ID_DETALLE
-                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + " ORDER BY PRIORIDAD DESC, FECHA DESC";
+                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM ADMIN.INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + " ORDER BY PRIORIDAD DESC, FECHA DESC";
                 
 
                 Conexion conn = new Conexion();
