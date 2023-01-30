@@ -4,6 +4,7 @@
     {
         public int idaux { get; set; } = -1;
         public int idestado { get; set; } = -1;
+        public int idarea { get; set; } = -1;
         public int idinventario { get; set; } = -1;
         public int iddepartamento { get; set; } = -1;
         public int iddocumento { get; set; } = -1;

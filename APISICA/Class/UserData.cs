@@ -32,6 +32,7 @@
         public int MantenimientoUsuarioExterno { get; set; } = 0;
         public int MantenimientoSocio { get; set; } = 0;
         public int MantenimientoCredito { get; set; } = 0;
+        public int MantenimientoListas { get; set; } = 0;
         public int Nivel { get; set; } = 0;
         public int Pendiente { get; set; } = 0;
         public int PendienteRegularizar { get; set; } = 0;

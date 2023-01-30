@@ -71,7 +71,55 @@ namespace APISICA.Controllers
             {
                 return Unauthorized("No se recibió bearer token");
             }
-            
+
+        }
+
+        [HttpGet("listaarea")]
+        public IActionResult ListaArea()
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt;
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "SELECT * FROM ADMIN.LAREA WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
+
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+
         }
 
         [HttpGet("listadepartamento")]
@@ -96,7 +144,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN DESC";
+                string strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
 
                 Conexion conn = new Conexion();
                 try
@@ -119,7 +167,7 @@ namespace APISICA.Controllers
             {
                 return Unauthorized("No se recibió bearer token");
             }
-            
+
         }
 
         [HttpPost("listadocumento")]
@@ -144,7 +192,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN DESC";
+                string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
 
                 Conexion conn = new Conexion();
                 try
@@ -434,7 +482,8 @@ namespace APISICA.Controllers
                 string strSQL = ""; ;
                 if (jsonbody.tiposeleccionarusuario == 1)
                 {
-                    strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
+                    strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
+                    strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
                     strSQL += "WHERE UX.ANULADO = 0 AND UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + jsonbody.busquedalibre + "%' ORDER BY UX.ORDEN ASC";
                 }
                 else
