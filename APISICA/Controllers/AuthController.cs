@@ -66,7 +66,7 @@ namespace APISICA.Controllers
         public IActionResult Login(User request)
         {
             DataTable dt;
-            string strSQL = "SELECT U.PASSWORDHASH, U.PASSWORDSALT, U.ID_USUARIO, U.CAMBIAR_PASSWORD, U.ACCESO_PERMITIDO, U.CERRAR_SESION, NVL(P.BUSQUEDA, 0) AS BUSQUEDA, NVL(P.BUSQUEDA_HISTORICO, 0) AS BUSQUEDA_HISTORICO, NVL(P.BUSQUEDA_EDITAR, 0) AS BUSQUEDA_EDITAR, NVL(P.MOVER, 0) MOVER, NVL(P.MOVER_EXPEDIENTE, 0) MOVER_EXPEDIENTE, NVL(P.MOVER_DOCUMENTO, 0) MOVER_DOCUMENTO, NVL(P.MOVER_MASIVO, 0) MOVER_MASIVO, NVL(P.VALIJA, 0) VALIJA, NVL(P.VALIJA_NUEVO, 0) VALIJA_NUEVO , NVL(P.VALIJA_REINGRESO, 0) VALIJA_REINGRESO, NVL(P.VALIJA_CONFIRMAR, 0) VALIJA_CONFIRMAR, NVL(P.VALIJA_MANUAL, 0) VALIJA_MANUAL, NVL(P.PAGARE, 0) PAGARE, NVL(P.PAGARE_BUSCAR, 0) PAGARE_BUSCAR, NVL(P.PAGARE_RECIBIR, 0) PAGARE_RECIBIR, NVL(P.PAGARE_ENTREGAR, 0) PAGARE_ENTREGAR, NVL(P.LETRA, 0) LETRA, NVL(P.LETRA_NUEVO, 0) LETRA_NUEVO, NVL(P.LETRA_ENTREGAR, 0) LETRA_ENTREGAR, NVL(P.LETRA_REINGRESO, 0) LETRA_REINGRESO, NVL(P.LETRA_BUSCAR, 0) LETRA_BUSCAR, NVL(P.MANTENIMIENTO, 0) MANTENIMIENTO, NVL(P.MANTENIMIENTO_USUARIO_EXTERNO, 0) MANTENIMIENTO_USUARIO_EXTERNO, NVL(P.MANTENIMIENTO_SOCIO, 0) MANTENIMIENTO_SOCIO, NVL(P.MANTENIMIENTO_CREDITO, 0) MANTENIMIENTO_CREDITO, NVL(P.MANTENIMIENTO_LISTAS, 0) MANTENIMIENTO_LISTAS, NVL(P.PENDIENTE, 0) PENDIENTE, NVL(P.PENDIENTE_REGULARIZAR, 0) PENDIENTE_REGULARIZAR, NVL(P.REPORTE, 0) REPORTE, NVL(P.REPORTE_CAJAS, 0) REPORTE_CAJAS, NVL(P.PRESTAR, 0) PRESTAR, NVL(P.PRESTAR_PRESTAR, 0) PRESTAR_PRESTAR, NVL(P.PRESTAR_RECIBIR, 0) PRESTAR_RECIBIR,  NVL(P.NIVEL, 0) AS NIVEL FROM ADMIN.USUARIO U LEFT JOIN ADMIN.PERMISO P ON U.ID_USUARIO = P.ID_USUARIO_FK WHERE U.NOMBRE_USUARIO = '" + request.Username + "'";
+            string strSQL = "SELECT U.PASSWORDHASH, U.PASSWORDSALT, U.ID_USUARIO, U.CAMBIAR_PASSWORD, U.ACCESO_PERMITIDO, U.CERRAR_SESION, NVL(P.BUSQUEDA, 0) AS BUSQUEDA, NVL(P.BUSQUEDA_HISTORICO, 0) AS BUSQUEDA_HISTORICO, NVL(P.BUSQUEDA_EDITAR, 0) AS BUSQUEDA_EDITAR, NVL(P.MOVER, 0) MOVER, NVL(P.MOVER_EXPEDIENTE, 0) MOVER_EXPEDIENTE, NVL(P.MOVER_DOCUMENTO, 0) MOVER_DOCUMENTO, NVL(P.MOVER_MASIVO, 0) MOVER_MASIVO, NVL(P.VALIJA, 0) VALIJA, NVL(P.VALIJA_NUEVO, 0) VALIJA_NUEVO , NVL(P.VALIJA_VALIJA, 0) VALIJA_VALIJA, NVL(P.VALIJA_TRANSICION, 0) VALIJA_TRANSICION, NVL(P.PAGARE, 0) PAGARE, NVL(P.PAGARE_BUSCAR, 0) PAGARE_BUSCAR, NVL(P.PAGARE_RECIBIR, 0) PAGARE_RECIBIR, NVL(P.PAGARE_ENTREGAR, 0) PAGARE_ENTREGAR, NVL(P.LETRA, 0) LETRA, NVL(P.LETRA_NUEVO, 0) LETRA_NUEVO, NVL(P.LETRA_ENTREGAR, 0) LETRA_ENTREGAR, NVL(P.LETRA_REINGRESO, 0) LETRA_REINGRESO, NVL(P.LETRA_BUSCAR, 0) LETRA_BUSCAR, NVL(P.MANTENIMIENTO, 0) MANTENIMIENTO, NVL(P.MANTENIMIENTO_USUARIO_EXTERNO, 0) MANTENIMIENTO_USUARIO_EXTERNO, NVL(P.MANTENIMIENTO_LISTAS, 0) MANTENIMIENTO_LISTAS, NVL(P.PENDIENTE, 0) PENDIENTE, NVL(P.PENDIENTE_REGULARIZAR, 0) PENDIENTE_REGULARIZAR, NVL(P.REPORTE, 0) REPORTE, NVL(P.REPORTE_CAJAS, 0) REPORTE_CAJAS, NVL(P.PRESTAR, 0) PRESTAR, NVL(P.PRESTAR_PRESTAR, 0) PRESTAR_PRESTAR, NVL(P.PRESTAR_RECIBIR, 0) PRESTAR_RECIBIR FROM ADMIN.USUARIO U LEFT JOIN ADMIN.PERMISO P ON U.ID_USUARIO = P.ID_USUARIO_FK WHERE U.NOMBRE_USUARIO = '" + request.Username + "'";
             string token;
             Conexion conn = new Conexion();
             try
@@ -118,9 +118,8 @@ namespace APISICA.Controllers
                 userdata.MoverDocumento = Int32.Parse(dt.Rows[0]["MOVER_DOCUMENTO"].ToString() ?? "NULL");
                 userdata.Valija = Int32.Parse(dt.Rows[0]["VALIJA"].ToString() ?? "NULL");
                 userdata.ValijaNuevo = Int32.Parse(dt.Rows[0]["VALIJA_NUEVO"].ToString() ?? "NULL");
-                userdata.ValijaReingreso = Int32.Parse(dt.Rows[0]["VALIJA_REINGRESO"].ToString() ?? "NULL");
-                userdata.ValijaConfirmar = Int32.Parse(dt.Rows[0]["VALIJA_CONFIRMAR"].ToString() ?? "NULL");
-                userdata.ValijaManual = Int32.Parse(dt.Rows[0]["VALIJA_MANUAL"].ToString() ?? "NULL");
+                userdata.ValijaValija = Int32.Parse(dt.Rows[0]["VALIJA_VALIJA"].ToString() ?? "NULL");
+                userdata.ValijaTransicion = Int32.Parse(dt.Rows[0]["VALIJA_TRANSICION"].ToString() ?? "NULL");
                 userdata.Pagare = Int32.Parse(dt.Rows[0]["PAGARE"].ToString() ?? "NULL");
                 userdata.PagareBuscar = Int32.Parse(dt.Rows[0]["PAGARE_BUSCAR"].ToString() ?? "NULL");
                 userdata.PagareRecibir = Int32.Parse(dt.Rows[0]["PAGARE_RECIBIR"].ToString() ?? "NULL");
@@ -131,9 +130,7 @@ namespace APISICA.Controllers
                 userdata.LetraReingreso = Int32.Parse(dt.Rows[0]["LETRA_REINGRESO"].ToString() ?? "NULL");
                 userdata.LetraBuscar = Int32.Parse(dt.Rows[0]["LETRA_BUSCAR"].ToString() ?? "NULL");
                 userdata.Mantenimiento = Int32.Parse(dt.Rows[0]["MANTENIMIENTO"].ToString() ?? "NULL");
-                userdata.MantenimientoCredito = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_CREDITO"].ToString() ?? "NULL");
                 userdata.MantenimientoUsuarioExterno = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_USUARIO_EXTERNO"].ToString() ?? "NULL");
-                userdata.MantenimientoSocio = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_SOCIO"].ToString() ?? "NULL");
                 userdata.MantenimientoListas = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_LISTAS"].ToString() ?? "NULL");
                 userdata.Pendiente = Int32.Parse(dt.Rows[0]["PENDIENTE"].ToString() ?? "NULL");
                 userdata.PendienteRegularizar = Int32.Parse(dt.Rows[0]["PENDIENTE_REGULARIZAR"].ToString() ?? "NULL");
@@ -142,8 +139,6 @@ namespace APISICA.Controllers
                 userdata.Prestar = Int32.Parse(dt.Rows[0]["PRESTAR"].ToString() ?? "NULL");
                 userdata.PrestarPrestar = Int32.Parse(dt.Rows[0]["PRESTAR_PRESTAR"].ToString() ?? "NULL");
                 userdata.PrestarRecibir = Int32.Parse(dt.Rows[0]["PRESTAR_RECIBIR"].ToString() ?? "NULL");
-
-                userdata.Nivel = Int32.Parse(dt.Rows[0]["NIVEL"].ToString() ?? "NULL");
 
                 userdata.Token = token;
 
@@ -194,7 +189,7 @@ namespace APISICA.Controllers
                 return computedHash.SequenceEqual(Convert.FromBase64String(passwordHash));
             }
         }
-        /*
+        
         [HttpPost("getpasswordhash")]
         public string GetPasswordHash(string password)
         {
@@ -213,6 +208,6 @@ namespace APISICA.Controllers
             }
 
         }
-        */
+        
     }
 }

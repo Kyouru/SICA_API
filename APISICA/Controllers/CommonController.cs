@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Data;
+using System.Text.Json.Nodes;
 
 namespace APISICA.Controllers
 {
@@ -74,8 +75,8 @@ namespace APISICA.Controllers
 
         }
 
-        [HttpGet("listaarea")]
-        public IActionResult ListaArea()
+        [HttpPost("listaarea")]
+        public IActionResult ListaArea(Class.JsonBody jsonbody)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -95,8 +96,16 @@ namespace APISICA.Controllers
                 {
                     return Unauthorized("Sesion no encontrada");
                 }
-
-                string strSQL = "SELECT * FROM ADMIN.LAREA WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT * FROM ADMIN.LAREA ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT * FROM ADMIN.LAREA WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                }
+                
 
                 Conexion conn = new Conexion();
                 try
@@ -122,8 +131,8 @@ namespace APISICA.Controllers
 
         }
 
-        [HttpGet("listadepartamento")]
-        public IActionResult ListaDepartamento()
+        [HttpPost("listadepartamento")]
+        public IActionResult ListaDepartamento(Class.JsonBody jsonbody)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -144,7 +153,16 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                }
+                
 
                 Conexion conn = new Conexion();
                 try
@@ -192,7 +210,15 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
+                }
 
                 Conexion conn = new Conexion();
                 try
@@ -240,7 +266,16 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT ID_DETALLE, NOMBRE_DETALLE FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
+                }
+                
 
                 Conexion conn = new Conexion();
                 try
@@ -266,8 +301,8 @@ namespace APISICA.Controllers
             
         }
 
-        [HttpGet("listaclasificacion")]
-        public IActionResult ListaClasificacion()
+        [HttpPost("listaclasificacion")]
+        public IActionResult ListaClasificacion(Class.JsonBody jsonbody)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -288,8 +323,16 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE ANULADO = 0 ORDER BY ORDEN ASC";
-
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                }
+                
                 Conexion conn = new Conexion();
                 try
                 {
@@ -304,7 +347,7 @@ namespace APISICA.Controllers
                 catch (Exception ex)
                 {
                     conn.Cerrar();
-                    return BadRequest(ex.Message);
+                    return BadRequest(ex.Message + strSQL);
                 }
             }
             else
@@ -314,8 +357,8 @@ namespace APISICA.Controllers
             
         }
 
-        [HttpGet("listaproducto")]
-        public IActionResult ListaProducto()
+        [HttpPost("listaproducto")]
+        public IActionResult ListaProducto(Class.JsonBody jsonbody)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -336,7 +379,15 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                }
 
                 Conexion conn = new Conexion();
                 try
@@ -352,7 +403,7 @@ namespace APISICA.Controllers
                 catch (Exception ex)
                 {
                     conn.Cerrar();
-                    return BadRequest(ex.Message);
+                    return BadRequest(ex.Message + strSQL);
                 }
             }
             else
@@ -409,8 +460,8 @@ namespace APISICA.Controllers
             
         }
 
-        [HttpGet("listacentrocosto")]
-        public IActionResult ListaCentroCosto()
+        [HttpPost("listacentrocosto")]
+        public IActionResult ListaCentroCosto(Class.JsonBody jsonbody)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -431,7 +482,15 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO";
+                string strSQL;
+                if (jsonbody.anulado == 1)
+                {
+                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO ORDER BY ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                }
 
                 Conexion conn = new Conexion();
                 try
@@ -484,7 +543,12 @@ namespace APISICA.Controllers
                 {
                     strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
                     strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
-                    strSQL += "WHERE UX.ANULADO = 0 AND UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + jsonbody.busquedalibre + "%' ORDER BY UX.ORDEN ASC";
+                    strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + jsonbody.busquedalibre + "%'";
+                    if (jsonbody.anulado == 0)
+                    {
+                        strSQL += " AND UX.ANULADO = 0";
+                    }
+                    strSQL += " ORDER BY UX.ORDEN ASC";
                 }
                 else
                 {
@@ -542,7 +606,12 @@ namespace APISICA.Controllers
                 if (jsonbody.tiposeleccionarubicacion == 1)
                 {
                     strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
-                    strSQL += "WHERE UBI.ANULADO = 0 AND PRESTAR = 1 ORDER BY UBI.ORDEN ASC";
+                    strSQL += "WHERE PRESTAR = 1";
+                    if (jsonbody.anulado == 0)
+                    {
+                        strSQL += " AND UBI.ANULADO = 0";
+                    }
+                    strSQL += " ORDER BY UBI.ORDEN ASC";
                 }
                 else
                 {

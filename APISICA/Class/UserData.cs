@@ -16,9 +16,8 @@
         public int MoverMasivo { get; set; } = 0;
         public int Valija { get; set; } = 0;
         public int ValijaNuevo { get; set; } = 0;
-        public int ValijaReingreso { get; set; } = 0;
-        public int ValijaConfirmar { get; set; } = 0;
-        public int ValijaManual { get; set; } = 0;
+        public int ValijaValija { get; set; } = 0;
+        public int ValijaTransicion { get; set; } = 0;
         public int Pagare { get; set; } = 0;
         public int PagareBuscar { get; set; } = 0;
         public int PagareRecibir { get; set; } = 0;
@@ -33,7 +32,6 @@
         public int MantenimientoSocio { get; set; } = 0;
         public int MantenimientoCredito { get; set; } = 0;
         public int MantenimientoListas { get; set; } = 0;
-        public int Nivel { get; set; } = 0;
         public int Pendiente { get; set; } = 0;
         public int PendienteRegularizar { get; set; } = 0;
         public int Reporte { get; set; } = 0;

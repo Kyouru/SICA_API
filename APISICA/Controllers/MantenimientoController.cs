@@ -433,7 +433,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDEPARTAMENTO (NOMBRE_DEPARTAMENTO, ORDEN, ANULADO) VALUES ('" + jsonbody.strdepartamento + "', (SELECT MAX(ORDEN)+1 FROM ADMIN.LDEPARTAMENTO), 0)";
+                string strSQL = "INSERT INTO ADMIN.LDEPARTAMENTO (ID_DEPARTAMENTO, NOMBRE_DEPARTAMENTO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_DEPARTAMENTO),0)+1 FROM ADMIN.LDEPARTAMENTO), '" + jsonbody.strdepartamento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDEPARTAMENTO), 0)";
                 
                 Conexion conn = new Conexion();
                 try
@@ -528,7 +528,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ANULADO = 1 WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + "";
+                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + ") WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento;
                 Conexion conn = new Conexion();
 
                 try
@@ -574,7 +574,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDOCUMENTO (NOMBRE_DOCUMENTO, ORDEN, ID_DEPARTAMENTO_FK, ANULADO) VALUES ('" + jsonbody.strdocumento + "', (SELECT MAX(ORDEN)+1 FROM ADMIN.LDOCUMENTO), " + jsonbody.iddepartamento + ", 0)";
+                string strSQL = "INSERT INTO ADMIN.LDOCUMENTO (ID_DOCUMENTO, NOMBRE_DOCUMENTO, ORDEN, ID_DEPARTAMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DOCUMENTO),0)+1 FROM ADMIN.LDOCUMENTO), '" + jsonbody.strdocumento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDOCUMENTO), " + jsonbody.iddepartamento + ", 0)";
 
                 Conexion conn = new Conexion();
                 try
@@ -668,7 +668,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ANULADO = 1 WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + "";
+                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + ") WHERE ID_DOCUMENTO = " + jsonbody.iddocumento;
                 Conexion conn = new Conexion();
 
                 try
@@ -713,7 +713,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDETALLE (NOMBRE_DETALLE, ORDEN, ID_DOCUMENTO_FK, ANULADO) VALUES ('" + jsonbody.strdetalle + "', (SELECT MAX(ORDEN)+1 FROM ADMIN.LDETALLE), " + jsonbody.iddocumento + ", 0)";
+                string strSQL = "INSERT INTO ADMIN.LDETALLE (ID_DETALLE, NOMBRE_DETALLE, ORDEN, ID_DOCUMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DETALLE),0)+1 FROM ADMIN.LDETALLE), '" + jsonbody.strdetalle + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDETALLE), " + jsonbody.iddocumento + ", 0)";
 
                 Conexion conn = new Conexion();
                 try
@@ -807,7 +807,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDETALLE SET ANULADO = 1 WHERE ID_DETALLE = " + jsonbody.iddetalle + "";
+                string strSQL = "UPDATE ADMIN.LDETALLE SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + jsonbody.iddetalle + ") WHERE ID_DETALLE = " + jsonbody.iddetalle;
                 Conexion conn = new Conexion();
 
                 try

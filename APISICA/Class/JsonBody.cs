@@ -28,8 +28,7 @@
         public int tiposeleccionarusuario { get; set; } = -1;
         public int tiposeleccionarubicacion { get; set; } = -1;
         public int entransito { get; set; } = -1;
-
-        public bool anulado = false;
+        public int anulado { get; set; } = -1;
         public string strdepartamento { get; set; } = string.Empty;
         public string strdocumento { get; set; } = string.Empty;
         public string strdetalle { get; set; } = string.Empty;
