@@ -27,38 +27,47 @@ namespace APISICA.Controllers
         [HttpPost("actualizarpassword")]
         public IActionResult ActualizarPassword(User request)
         {
-            Cuenta cuenta;
-            try
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
             {
-                cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), request.token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            if (!(cuenta.IdUser > 0))
-            {
-                return Unauthorized("Sesion no encontrada");
-            }
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
 
-            Conexion conn = new Conexion();
-            try
-            {
-                conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                CreatePasswordHash(request.Password, out string passwordHash, out string passwordSalt);
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    CreatePasswordHash(request.Password, out string passwordHash, out string passwordSalt);
 
-                string strSQL = "UPDATE ADMIN.USUARIO SET CAMBIAR_PASSWORD = 0, PASSWORDHASH = '" + passwordHash + "', PASSWORDSALT = '" + passwordSalt + "' WHERE ID_USUARIO = " + cuenta.IdUser;
+                    string strSQL = "UPDATE ADMIN.USUARIO SET CAMBIAR_PASSWORD = 0, PASSWORDHASH = '" + passwordHash + "', PASSWORDSALT = '" + passwordSalt + "' WHERE ID_USUARIO = " + cuenta.IdUser;
 
-                conn.Conectar();
-                conn.EjecutarQuery(strSQL);
-                conn.Cerrar();
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
 
-                return Ok();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                conn.Cerrar();
-                return BadRequest(ex.Message);
+                return Unauthorized("No se recibió bearer token");
             }
         }
 
@@ -105,40 +114,40 @@ namespace APISICA.Controllers
                 UserData userdata = new UserData();
 
                 userdata.Username = request.Username;
-                userdata.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "NULL");
-                userdata.CambiarPassword = Int32.Parse(dt.Rows[0]["CAMBIAR_PASSWORD"].ToString() ?? "NULL");
-                userdata.AccesoPermitido = Int32.Parse(dt.Rows[0]["ACCESO_PERMITIDO"].ToString() ?? "NULL");
-                userdata.CerrarSesion = Int32.Parse(dt.Rows[0]["CERRAR_SESION"].ToString() ?? "NULL");
+                userdata.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "-1");
+                userdata.CambiarPassword = Int32.Parse(dt.Rows[0]["CAMBIAR_PASSWORD"].ToString() ?? "-1");
+                userdata.AccesoPermitido = Int32.Parse(dt.Rows[0]["ACCESO_PERMITIDO"].ToString() ?? "-1");
+                userdata.CerrarSesion = Int32.Parse(dt.Rows[0]["CERRAR_SESION"].ToString() ?? "-1");
 
-                userdata.Busqueda = Int32.Parse(dt.Rows[0]["BUSQUEDA"].ToString() ?? "NULL");
-                userdata.BusquedaHistorico = Int32.Parse(dt.Rows[0]["BUSQUEDA_HISTORICO"].ToString() ?? "NULL");
-                userdata.BusquedaEditar = Int32.Parse(dt.Rows[0]["BUSQUEDA_EDITAR"].ToString() ?? "NULL");
-                userdata.Mover = Int32.Parse(dt.Rows[0]["MOVER"].ToString() ?? "NULL");
-                userdata.MoverExpediente = Int32.Parse(dt.Rows[0]["MOVER_EXPEDIENTE"].ToString() ?? "NULL");
-                userdata.MoverDocumento = Int32.Parse(dt.Rows[0]["MOVER_DOCUMENTO"].ToString() ?? "NULL");
-                userdata.Valija = Int32.Parse(dt.Rows[0]["VALIJA"].ToString() ?? "NULL");
-                userdata.ValijaNuevo = Int32.Parse(dt.Rows[0]["VALIJA_NUEVO"].ToString() ?? "NULL");
-                userdata.ValijaValija = Int32.Parse(dt.Rows[0]["VALIJA_VALIJA"].ToString() ?? "NULL");
-                userdata.ValijaTransicion = Int32.Parse(dt.Rows[0]["VALIJA_TRANSICION"].ToString() ?? "NULL");
-                userdata.Pagare = Int32.Parse(dt.Rows[0]["PAGARE"].ToString() ?? "NULL");
-                userdata.PagareBuscar = Int32.Parse(dt.Rows[0]["PAGARE_BUSCAR"].ToString() ?? "NULL");
-                userdata.PagareRecibir = Int32.Parse(dt.Rows[0]["PAGARE_RECIBIR"].ToString() ?? "NULL");
-                userdata.PagareEntregar = Int32.Parse(dt.Rows[0]["PAGARE_ENTREGAR"].ToString() ?? "NULL");
-                userdata.Letra = Int32.Parse(dt.Rows[0]["LETRA"].ToString() ?? "NULL");
-                userdata.LetraNuevo = Int32.Parse(dt.Rows[0]["LETRA_NUEVO"].ToString() ?? "NULL");
-                userdata.LetraEntregar = Int32.Parse(dt.Rows[0]["LETRA_ENTREGAR"].ToString() ?? "NULL");
-                userdata.LetraReingreso = Int32.Parse(dt.Rows[0]["LETRA_REINGRESO"].ToString() ?? "NULL");
-                userdata.LetraBuscar = Int32.Parse(dt.Rows[0]["LETRA_BUSCAR"].ToString() ?? "NULL");
-                userdata.Mantenimiento = Int32.Parse(dt.Rows[0]["MANTENIMIENTO"].ToString() ?? "NULL");
-                userdata.MantenimientoUsuarioExterno = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_USUARIO_EXTERNO"].ToString() ?? "NULL");
-                userdata.MantenimientoListas = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_LISTAS"].ToString() ?? "NULL");
-                userdata.Pendiente = Int32.Parse(dt.Rows[0]["PENDIENTE"].ToString() ?? "NULL");
-                userdata.PendienteRegularizar = Int32.Parse(dt.Rows[0]["PENDIENTE_REGULARIZAR"].ToString() ?? "NULL");
-                userdata.Reporte = Int32.Parse(dt.Rows[0]["REPORTE"].ToString() ?? "NULL");
-                userdata.ReporteCajas = Int32.Parse(dt.Rows[0]["REPORTE_CAJAS"].ToString() ?? "NULL");
-                userdata.Prestar = Int32.Parse(dt.Rows[0]["PRESTAR"].ToString() ?? "NULL");
-                userdata.PrestarPrestar = Int32.Parse(dt.Rows[0]["PRESTAR_PRESTAR"].ToString() ?? "NULL");
-                userdata.PrestarRecibir = Int32.Parse(dt.Rows[0]["PRESTAR_RECIBIR"].ToString() ?? "NULL");
+                userdata.Busqueda = Int32.Parse(dt.Rows[0]["BUSQUEDA"].ToString() ?? "-1");
+                userdata.BusquedaHistorico = Int32.Parse(dt.Rows[0]["BUSQUEDA_HISTORICO"].ToString() ?? "-1");
+                userdata.BusquedaEditar = Int32.Parse(dt.Rows[0]["BUSQUEDA_EDITAR"].ToString() ?? "-1");
+                userdata.Mover = Int32.Parse(dt.Rows[0]["MOVER"].ToString() ?? "-1");
+                userdata.MoverExpediente = Int32.Parse(dt.Rows[0]["MOVER_EXPEDIENTE"].ToString() ?? "-1");
+                userdata.MoverDocumento = Int32.Parse(dt.Rows[0]["MOVER_DOCUMENTO"].ToString() ?? "-1");
+                userdata.Valija = Int32.Parse(dt.Rows[0]["VALIJA"].ToString() ?? "-1");
+                userdata.ValijaNuevo = Int32.Parse(dt.Rows[0]["VALIJA_NUEVO"].ToString() ?? "-1");
+                userdata.ValijaValija = Int32.Parse(dt.Rows[0]["VALIJA_VALIJA"].ToString() ?? "-1");
+                userdata.ValijaTransicion = Int32.Parse(dt.Rows[0]["VALIJA_TRANSICION"].ToString() ?? "-1");
+                userdata.Pagare = Int32.Parse(dt.Rows[0]["PAGARE"].ToString() ?? "-1");
+                userdata.PagareBuscar = Int32.Parse(dt.Rows[0]["PAGARE_BUSCAR"].ToString() ?? "-1");
+                userdata.PagareRecibir = Int32.Parse(dt.Rows[0]["PAGARE_RECIBIR"].ToString() ?? "-1");
+                userdata.PagareEntregar = Int32.Parse(dt.Rows[0]["PAGARE_ENTREGAR"].ToString() ?? "-1");
+                userdata.Letra = Int32.Parse(dt.Rows[0]["LETRA"].ToString() ?? "-1");
+                userdata.LetraNuevo = Int32.Parse(dt.Rows[0]["LETRA_NUEVO"].ToString() ?? "-1");
+                userdata.LetraEntregar = Int32.Parse(dt.Rows[0]["LETRA_ENTREGAR"].ToString() ?? "-1");
+                userdata.LetraReingreso = Int32.Parse(dt.Rows[0]["LETRA_REINGRESO"].ToString() ?? "-1");
+                userdata.LetraBuscar = Int32.Parse(dt.Rows[0]["LETRA_BUSCAR"].ToString() ?? "-1");
+                userdata.Mantenimiento = Int32.Parse(dt.Rows[0]["MANTENIMIENTO"].ToString() ?? "-1");
+                userdata.MantenimientoUsuarioExterno = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_USUARIO_EXTERNO"].ToString() ?? "-1");
+                userdata.MantenimientoListas = Int32.Parse(dt.Rows[0]["MANTENIMIENTO_LISTAS"].ToString() ?? "-1");
+                userdata.Pendiente = Int32.Parse(dt.Rows[0]["PENDIENTE"].ToString() ?? "-1");
+                userdata.PendienteRegularizar = Int32.Parse(dt.Rows[0]["PENDIENTE_REGULARIZAR"].ToString() ?? "-1");
+                userdata.Reporte = Int32.Parse(dt.Rows[0]["REPORTE"].ToString() ?? "-1");
+                userdata.ReporteCajas = Int32.Parse(dt.Rows[0]["REPORTE_CAJAS"].ToString() ?? "-1");
+                userdata.Prestar = Int32.Parse(dt.Rows[0]["PRESTAR"].ToString() ?? "-1");
+                userdata.PrestarPrestar = Int32.Parse(dt.Rows[0]["PRESTAR_PRESTAR"].ToString() ?? "-1");
+                userdata.PrestarRecibir = Int32.Parse(dt.Rows[0]["PRESTAR_RECIBIR"].ToString() ?? "-1");
 
                 userdata.Token = token;
 
@@ -190,6 +199,7 @@ namespace APISICA.Controllers
             }
         }
         
+        /*
         [HttpPost("getpasswordhash")]
         public string GetPasswordHash(string password)
         {
@@ -208,6 +218,6 @@ namespace APISICA.Controllers
             }
 
         }
-        
+        */
     }
 }

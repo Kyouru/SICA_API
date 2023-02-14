@@ -365,7 +365,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = @"SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                string strSQL = @"SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, 'MOVIMIENTO' AS ESTADO, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
                                 IA.NUMERO_DE_CAJA, IA.CODIGO_SOCIO, IA.NOMBRE_SOCIO, IA.NUMEROSOLICITUD,
                                 CASE WHEN UB1.ID_UBICACION = 1 THEN U1.NOMBRE_USUARIO
@@ -393,7 +393,7 @@ namespace APISICA.Controllers
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1 AND IA.ID_INVENTARIO_GENERAL_FK IS NOT NULL
                                         AND IH.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
 
-                strSQL += @"UNION ALL SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                strSQL += @"UNION ALL SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, 'MOVIMIENTO' AS ESTADO, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
                                 IG.NUMERO_DE_CAJA, IG.CODIGO_SOCIO, IG.NOMBRE_SOCIO, IG.NUMEROSOLICITUD,
                                 CASE WHEN UB1.ID_UBICACION = 1 THEN U1.NOMBRE_USUARIO
@@ -422,7 +422,7 @@ namespace APISICA.Controllers
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1 AND IA.ID_INVENTARIO_GENERAL_FK IS NULL
                                         AND IH.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
 
-                strSQL += @" UNION ALL SELECT IG.ID_INVENTARIO_GENERAL AS ID, TO_CHAR(IG.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IG.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                strSQL += @" UNION ALL SELECT IG.ID_INVENTARIO_GENERAL AS ID, 'ACTUAL' AS ESTADO, TO_CHAR(IG.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IG.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
                                 IG.NUMERO_DE_CAJA, IG.CODIGO_SOCIO, IG.NOMBRE_SOCIO, IG.NUMEROSOLICITUD,
                                 UBI.NOMBRE_UBICACION AS ENTREGA,
@@ -439,7 +439,7 @@ namespace APISICA.Controllers
                                 WHERE IG.ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
 
                 strSQL += @" UNION ALL
-                                SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                                SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, 'EDICION' AS ESTADO, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
                                 IA.NUMERO_DE_CAJA, IA.CODIGO_SOCIO, IA.NOMBRE_SOCIO, IA.NUMEROSOLICITUD,
                                 NULL AS ENTREGA,
@@ -452,8 +452,11 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON IA.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IA.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IA.ID_DETALLE_FK = LDET.ID_DETALLE
-                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM ADMIN.INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + " ORDER BY PRIORIDAD DESC, FECHA DESC";
-                
+                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM ADMIN.INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario;
+
+                strSQL += " ORDER BY PRIORIDAD ASC, FECHA_RECIBE DESC";
+
+
 
                 Conexion conn = new Conexion();
 
