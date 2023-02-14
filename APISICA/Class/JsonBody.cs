@@ -22,11 +22,7 @@
         public string nombresocio { get; set; } = string.Empty;
         public string fechadesde { get; set; } = string.Empty;
         public string fechahasta { get; set; } = string.Empty;
-        public string fechamodifica { get; set; } = string.Empty;
         public string observacion { get; set; } = string.Empty;
-        public int pagare { get; set; } = -1;
-        public int tiposeleccionarusuario { get; set; } = -1;
-        public int tiposeleccionarubicacion { get; set; } = -1;
         public int entransito { get; set; } = -1;
         public int anulado { get; set; } = -1;
         public string strdepartamento { get; set; } = string.Empty;
@@ -35,14 +31,10 @@
         public string strclasificacion { get; set; } = string.Empty;
         public string strproducto { get; set; } = string.Empty;
         public string strcentrocosto { get; set; } = string.Empty;
-        public string strubicacion { get; set; } = string.Empty;
         public int idubicacionentrega { get; set; } = -1;
         public int idubicacionrecibe { get; set; } = -1;
         public bool pendienteok { get; set; } = false;
         public bool modificado { get; set; } = false;
-        public string pendiente { get; set; } = string.Empty;
-        public string detallepen { get; set; } = string.Empty;
-        public string banca { get; set; } = string.Empty;
         public int idrecibe { get; set; } = -1;
         public string nombreusuario { get; set; } = string.Empty;
         public string correousuario { get; set; } = string.Empty;

@@ -25,7 +25,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("buscar")]
-        public IActionResult Buscar(Class.JsonBody jsonbody)
+        public IActionResult Buscar(BuscarClass buscar)
         {
             DataTable dt;
             string authHeader = Request.Headers["Authorization"];
@@ -78,12 +78,12 @@ namespace APISICA.Controllers
                             LEFT JOIN ADMIN.LESTADO EST
                                 ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
                 strSQL += " WHERE 1 = 1";
-                if (jsonbody.busquedalibre != "")
-                    strSQL += " AND DESC_CONCAT LIKE '%" + jsonbody.busquedalibre + "%'";
-                if (jsonbody.numerocaja != "")
-                    strSQL += " AND NUMERO_DE_CAJA LIKE '" + jsonbody.numerocaja + "'";
-                if (jsonbody.fecha != "")
-                    strSQL += " AND TRUNC(FECHA_DESDE) <= TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD') AND TRUNC(FECHA_HASTA) >= TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD')";
+                if (buscar.busquedalibre != "")
+                    strSQL += " AND DESC_CONCAT LIKE '%" + buscar.busquedalibre + "%'";
+                if (buscar.numerocaja != "")
+                    strSQL += " AND NUMERO_DE_CAJA LIKE '" + buscar.numerocaja + "'";
+                if (buscar.fecha != "")
+                    strSQL += " AND TRUNC(FECHA_DESDE) <= TO_DATE('" + buscar.fecha + "', 'YYYY-MM-DD') AND TRUNC(FECHA_HASTA) >= TO_DATE('" + buscar.fecha + "', 'YYYY-MM-DD')";
                 strSQL += " ORDER BY ID_INVENTARIO_GENERAL DESC";
 
                 Conexion conn = new Conexion();
@@ -113,7 +113,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("datoseditar")]
-        public IActionResult DatosEditar(Class.JsonBody jsonbody)
+        public IActionResult DatosEditar (DatosEditarClass datosedit)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -137,7 +137,7 @@ namespace APISICA.Controllers
                 string strSQL = @"SELECT *
                 FROM (ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.LDEPARTAMENTO DEP ON IG.ID_DEPARTAMENTO_FK = DEP.ID_DEPARTAMENTO)
                 LEFT JOIN ADMIN.LDOCUMENTO DOC ON IG.ID_DOCUMENTO_FK = DOC.ID_DOCUMENTO
-                WHERE IG.ID_INVENTARIO_GENERAL = " + jsonbody.idinventario;
+                WHERE IG.ID_INVENTARIO_GENERAL = " + datosedit.idinventario;
 
                 Conexion conn = new Conexion();
                 try
@@ -163,7 +163,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("guardareditar")]
-        public IActionResult GuardarEditar(Class.JsonBody jsonbody)
+        public IActionResult GuardarEditar(GuardarClass guardar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -189,7 +189,7 @@ namespace APISICA.Controllers
                 try
                 {
                     conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                    Functions.guardarEditar(conn, cuenta, jsonbody);
+                    Functions.guardarEditar(conn, cuenta, guardar);
 
                     conn.Cerrar();
                     return Ok();
@@ -208,7 +208,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("historicomovimiento")]
-        public IActionResult HistoricoMovimiento(Class.JsonBody jsonbody)
+        public IActionResult HistoricoMovimiento(HistoricoMovimientoClass historicomov)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -250,7 +250,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1
-                                        AND IG.ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + " ORDER BY IH.FECHA DESC";
+                                        AND IG.ID_INVENTARIO_GENERAL = " + historicomov.idinventario + " ORDER BY IH.FECHA DESC";
 
                 Conexion conn = new Conexion();
 
@@ -278,7 +278,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("historicoedicion")]
-        public IActionResult HistoricoEditar(Class.JsonBody jsonbody)
+        public IActionResult HistoricoEditar(HistoricoEditarClass historicoedit)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -307,7 +307,7 @@ namespace APISICA.Controllers
                                 LEFT JOIN ADMIN.LCLASIFICACION CLA ON IA.ID_CLASIFICACION_FK = CLA.ID_CLASIFICACION
                                 LEFT JOIN ADMIN.LPRODUCTO PRO ON IA.ID_PRODUCTO_FK = PRO.ID_PRODUCTO
                                 LEFT JOIN ADMIN.CENTRO_COSTO CC ON IA.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO";
-                strSQL += " WHERE IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario;
+                strSQL += " WHERE IA.ID_INVENTARIO_GENERAL_FK = " + historicoedit.idinventario;
                 strSQL += @" UNION ALL
                                 SELECT                                             9999 AS N, FECHA_MODIFICA, U.NOMBRE_USUARIO AS REGISTRA, DEP.NOMBRE_DEPARTAMENTO AS DEPART, DOC.NOMBRE_DOCUMENTO AS DOC, DET.NOMBRE_DETALLE AS DETALLE, CLA.NOMBRE_CLASIFICACION AS CLASIFICACION, PRO.NOMBRE_PRODUCTO AS NOMBRE_PRODUCTO, CC.NOMBRE_CENTRO_COSTO AS CENTRO_COSTO, TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA, CODIGO_SOCIO AS CODIGO, NOMBRE_SOCIO AS NOMBRE, NUMEROSOLICITUD AS NUMEROSOLICITUD, OBSERVACION, NUMERO_DE_CAJA AS CAJA, PEN_NOMBRE, PEN_DETALLE, PEN_BANCA
                                 FROM ADMIN.INVENTARIO_GENERAL IG LEFT JOIN ADMIN.USUARIO U ON IG.ID_USUARIO_REGISTRA_FK = U.ID_USUARIO
@@ -317,7 +317,7 @@ namespace APISICA.Controllers
                                 LEFT JOIN ADMIN.LCLASIFICACION CLA ON IG.ID_CLASIFICACION_FK = CLA.ID_CLASIFICACION
                                 LEFT JOIN ADMIN.LPRODUCTO PRO ON IG.ID_PRODUCTO_FK = PRO.ID_PRODUCTO
                                 LEFT JOIN ADMIN.CENTRO_COSTO CC ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO";
-                strSQL += " WHERE IG.ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + " ORDER BY N DESC";
+                strSQL += " WHERE IG.ID_INVENTARIO_GENERAL = " + historicoedit.idinventario + " ORDER BY N DESC";
 
                 Conexion conn = new Conexion();
 
@@ -344,7 +344,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("historico")]
-        public IActionResult Historico(Class.JsonBody jsonbody)
+        public IActionResult Historico(HistoricoClass historico)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -391,7 +391,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IA.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IA.ID_DETALLE_FK = LDET.ID_DETALLE
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1 AND IA.ID_INVENTARIO_GENERAL_FK IS NOT NULL
-                                        AND IH.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
+                                        AND IH.ID_INVENTARIO_GENERAL_FK = " + historico.idinventario + "";
 
                 strSQL += @"UNION ALL SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, 'MOVIMIENTO' AS ESTADO, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
@@ -420,7 +420,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
                                 WHERE IH.ANULADO = 0 AND IH.RECIBIDO = 1 AND IA.ID_INVENTARIO_GENERAL_FK IS NULL
-                                        AND IH.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
+                                        AND IH.ID_INVENTARIO_GENERAL_FK = " + historico.idinventario + "";
 
                 strSQL += @" UNION ALL SELECT IG.ID_INVENTARIO_GENERAL AS ID, 'ACTUAL' AS ESTADO, TO_CHAR(IG.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IG.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
                                 LDEP.NOMBRE_DEPARTAMENTO, LDOC.NOMBRE_DOCUMENTO, LDET.NOMBRE_DETALLE,
@@ -436,7 +436,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IG.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IG.ID_DETALLE_FK = LDET.ID_DETALLE
                                     LEFT JOIN ADMIN.UBICACION UBI ON IG.ID_UBICACION_FK = UBI.ID_UBICACION
-                                WHERE IG.ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
+                                WHERE IG.ID_INVENTARIO_GENERAL = " + historico.idinventario + "";
 
                 strSQL += @" UNION ALL
                                 SELECT IA.ID_INVENTARIO_GENERAL_FK AS ID, 'EDICION' AS ESTADO, TO_CHAR(IA.FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(IA.FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
@@ -452,7 +452,7 @@ namespace APISICA.Controllers
                                     LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON IA.ID_DEPARTAMENTO_FK = LDEP.ID_DEPARTAMENTO
                                     LEFT JOIN ADMIN.LDOCUMENTO LDOC ON IA.ID_DOCUMENTO_FK = LDOC.ID_DOCUMENTO
                                     LEFT JOIN ADMIN.LDETALLE LDET ON IA.ID_DETALLE_FK = LDET.ID_DETALLE
-                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM ADMIN.INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario;
+                                WHERE IA.ID_INVENTARIO_ANTERIOR NOT IN (SELECT DISTINCT ID_INVENTARIO_ANTERIOR_FK FROM ADMIN.INVENTARIO_HISTORICO WHERE ID_INVENTARIO_GENERAL_FK = " + historico.idinventario + ") AND IA.ID_INVENTARIO_GENERAL_FK = " + historico.idinventario;
 
                 strSQL += " ORDER BY PRIORIDAD ASC, FECHA_RECIBE DESC";
 

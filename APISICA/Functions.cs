@@ -38,7 +38,7 @@ namespace APISICA
                     ) WHERE ID_INVENTARIO_GENERAL = " + idinventario;
         }
 
-        public static void guardarEditar(Conexion conn, Cuenta cuenta, JsonBody jsonbody)
+        public static void guardarEditar(Conexion conn, Cuenta cuenta, GuardarClass guardar)
         {
             /*string strSQL = @"INSERT INTO ADMIN.INVENTARIO_ANTERIOR (ID_INVENTARIO_GENERAL_FK, NUMERO_DE_CAJA, ID_DEPARTAMENTO_FK, ID_DOCUMENTO_FK, ID_DETALLE_FK, FECHA_DESDE, FECHA_HASTA,
                     ID_CLASIFICACION_FK, ID_PRODUCTO_FK, ID_CENTRO_COSTO_FK, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD, OBSERVACION, ID_USUARIO_REGISTRA_FK, FECHA_MODIFICA, PEN_NOMBRE, PEN_DETALLE, PEN_BANCA, DESC_CONCAT, USUARIO, FECHA)
@@ -47,26 +47,26 @@ namespace APISICA
                      " + cuenta.IdUser + ", SYSDATE FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + " RETURNING ID_INVENTARIO_ANTERIOR_NEW INTO :numero";
             */
             string strSQL = "INSERT INTO ADMIN.INVENTARIO_ANTERIOR (ID_INVENTARIO_GENERAL_FK, NUMERO_DE_CAJA, ID_DEPARTAMENTO_FK, ID_DOCUMENTO_FK, ID_DETALLE_FK, FECHA_DESDE, FECHA_HASTA, ID_CLASIFICACION_FK, ID_PRODUCTO_FK, ID_CENTRO_COSTO_FK, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD, OBSERVACION, ID_USUARIO_REGISTRA_FK, FECHA_MODIFICA, PEN_NOMBRE, PEN_DETALLE, PEN_BANCA, DESC_CONCAT, USUARIO, FECHA) VALUES (";
-            strSQL += "(SELECT ID_INVENTARIO_GENERAL FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT NUMERO_DE_CAJA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_DEPARTAMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_DOCUMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_DETALLE_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT FECHA_DESDE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT FECHA_HASTA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_CLASIFICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_PRODUCTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_CENTRO_COSTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT CODIGO_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT NOMBRE_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT NUMEROSOLICITUD FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT OBSERVACION FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT ID_USUARIO_REGISTRA_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT FECHA_MODIFICA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT PEN_NOMBRE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT PEN_DETALLE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT PEN_BANCA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
-            strSQL += "(SELECT DESC_CONCAT FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "),";
+            strSQL += "(SELECT ID_INVENTARIO_GENERAL FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NUMERO_DE_CAJA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DEPARTAMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DOCUMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DETALLE_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_DESDE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_HASTA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_CLASIFICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_PRODUCTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_CENTRO_COSTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT CODIGO_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NOMBRE_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NUMEROSOLICITUD FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT OBSERVACION FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_USUARIO_REGISTRA_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_MODIFICA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_NOMBRE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_DETALLE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_BANCA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT DESC_CONCAT FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
             strSQL += cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS')) RETURNING ID_INVENTARIO_ANTERIOR INTO :numero";
 
             conn.Conectar();
@@ -76,84 +76,87 @@ namespace APISICA
             {
                 throw new ArgumentException("No se pudo grabar el histórico INVENTARIO_ANTERIOR\n" + strSQL);
             }
-            strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ID_INVENTARIO_ANTERIOR_FK = " + i + " WHERE ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + " AND NVL(ID_INVENTARIO_ANTERIOR_FK, -1) = -1";
+            strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ID_INVENTARIO_ANTERIOR_FK = " + i + " WHERE ID_INVENTARIO_GENERAL_FK = " + guardar.idinventario + " AND NVL(ID_INVENTARIO_ANTERIOR_FK, -1) = -1";
             conn.EjecutarQuery(strSQL);
 
             strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET";
-            strSQL += " NUMERO_DE_CAJA = '" + jsonbody.numerocaja + "',";
-            if (jsonbody.iddetalle > 0)
+            strSQL += " NUMERO_DE_CAJA = '" + guardar.numerocaja + "',";
+            if (guardar.iddetalle > 0)
             {
-                strSQL += " ID_DETALLE_FK = " + jsonbody.iddetalle + ",";
+                strSQL += " ID_DETALLE_FK = " + guardar.iddetalle + ",";
             }
-            if (jsonbody.iddepartamento > 0)
+            if (guardar.iddepartamento > 0)
             {
-                strSQL += " ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + ",";
+                strSQL += " ID_DEPARTAMENTO_FK = " + guardar.iddepartamento + ",";
             }
-            if (jsonbody.iddocumento > 0)
+            if (guardar.iddocumento > 0)
             {
-                strSQL += " ID_DOCUMENTO_FK = " + jsonbody.iddocumento + ",";
+                strSQL += " ID_DOCUMENTO_FK = " + guardar.iddocumento + ",";
             }
-            if (jsonbody.idclasificacion > 0)
+            if (guardar.idclasificacion > 0)
             {
-                strSQL += " ID_CLASIFICACION_FK = " + jsonbody.idclasificacion + ",";
+                strSQL += " ID_CLASIFICACION_FK = " + guardar.idclasificacion + ",";
             }
-            if (jsonbody.idproducto > 0)
+            if (guardar.idproducto > 0)
             {
-                strSQL += " ID_PRODUCTO_FK = " + jsonbody.idproducto + ",";
+                strSQL += " ID_PRODUCTO_FK = " + guardar.idproducto + ",";
             }
-            if (jsonbody.idcentrocosto > 0)
+            if (guardar.idcentrocosto > 0)
             {
-                strSQL += " ID_CENTRO_COSTO_FK = " + jsonbody.idcentrocosto + ",";
+                strSQL += " ID_CENTRO_COSTO_FK = " + guardar.idcentrocosto + ",";
             }
-            if (jsonbody.pendiente != "")
+            if (guardar.pendiente != "")
             {
-                strSQL += " PEN_NOMBRE = '" + jsonbody.pendiente + "',";
+                strSQL += " PEN_NOMBRE = '" + guardar.pendiente + "',";
             }
-            if (jsonbody.detallepen != "")
+            if (guardar.detallepen != "")
             {
-                strSQL += " PEN_DETALLE = '" + jsonbody.detallepen + "',";
+                strSQL += " PEN_DETALLE = '" + guardar.detallepen + "',";
             }
-            if (jsonbody.banca != "")
+            if (guardar.banca != "")
             {
-                strSQL += " PEN_BANCA = '" + jsonbody.banca + "',";
+                strSQL += " PEN_BANCA = '" + guardar.banca + "',";
             }
 
             strSQL += " ID_USUARIO_REGISTRA_FK = " + cuenta.IdUser + ",";
 
-            if (jsonbody.codigosocio != "")
+            if (guardar.codigosocio != "")
             {
-                strSQL += " CODIGO_SOCIO = '" + jsonbody.codigosocio + "',";
+                strSQL += " CODIGO_SOCIO = '" + guardar.codigosocio + "',";
             }
-            if (jsonbody.nombresocio != "")
+            if (guardar.nombresocio != "")
             {
-                strSQL += " NOMBRE_SOCIO = '" + jsonbody.nombresocio + "',";
+                strSQL += " NOMBRE_SOCIO = '" + guardar.nombresocio + "',";
             }
-            if (jsonbody.numerosolicitud != "")
+            if (guardar.numerosolicitud != "")
             {
-                strSQL += " NUMEROSOLICITUD = '" + jsonbody.numerosolicitud + "',";
+                strSQL += " NUMEROSOLICITUD = '" + guardar.numerosolicitud + "',";
             }
-            if (jsonbody.observacion != "")
+            if (guardar.observacion != "")
             {
-                strSQL += " OBSERVACION = '" + jsonbody.observacion + "',";
+                strSQL += " OBSERVACION = '" + guardar.observacion + "',";
             }
 
-            if (jsonbody.fechadesde != "")
-                strSQL += " FECHA_DESDE = TO_DATE('" + jsonbody.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS'),";
+            if (guardar.fechadesde != "")
+                strSQL += " FECHA_DESDE = TO_DATE('" + guardar.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS'),";
             else
                 strSQL += " FECHA_DESDE = NULL,";
-            if (jsonbody.fechahasta != "")
-                strSQL += " FECHA_HASTA = TO_DATE('" + jsonbody.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS'),";
+            if (guardar.fechahasta != "")
+                strSQL += " FECHA_HASTA = TO_DATE('" + guardar.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS'),";
             else
                 strSQL += " FECHA_HASTA = NULL,";
-            if (jsonbody.fechamodifica != "")
-                strSQL += " FECHA_MODIFICA = TO_DATE('" + jsonbody.fechamodifica + "', 'YYYY-MM-DD HH24:MI:SS')";
-            strSQL += " WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario;
+            /*
+            if (guardar.fechamodifica != "")
+                strSQL += " FECHA_MODIFICA = TO_DATE('" + guardar.fechamodifica + "', 'YYYY-MM-DD HH24:MI:SS')";
+            */
+            strSQL += " FECHA_MODIFICA = TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS')";
+            strSQL += " WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario;
 
             //conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
             //conn.Conectar();
             conn.EjecutarQuery(strSQL);
 
-            strSQL = Functions.obtenerDescConcatSQL(jsonbody.idinventario);
+            strSQL = Functions.obtenerDescConcatSQL(guardar.idinventario);
 
             conn.EjecutarQuery(strSQL);
 

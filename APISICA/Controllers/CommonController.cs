@@ -132,7 +132,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listadepartamento")]
-        public IActionResult ListaDepartamento(Class.JsonBody jsonbody)
+        public IActionResult ListaDepartamento(ListaDepartamentoClass listadep)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -154,7 +154,7 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listadep.anulado == 1)
                 {
                     strSQL = "SELECT * FROM ADMIN.LDEPARTAMENTO ORDER BY ORDEN ASC";
                 }
@@ -189,7 +189,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listadocumento")]
-        public IActionResult ListaDocumento(Class.JsonBody jsonbody)
+        public IActionResult ListaDocumento(ListaDocumentoClass listadoc)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -211,13 +211,13 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listadoc.anulado == 1)
                 {
-                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
+                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ID_DEPARTAMENTO_FK = " + listadoc.iddepartamento + " ORDER BY ORDEN ASC";
                 }
                 else
                 {
-                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + jsonbody.iddepartamento + " ORDER BY ORDEN ASC";
+                    strSQL = "SELECT * FROM ADMIN.LDOCUMENTO WHERE ANULADO = 0 AND ID_DEPARTAMENTO_FK = " + listadoc.iddepartamento + " ORDER BY ORDEN ASC";
                 }
 
                 Conexion conn = new Conexion();
@@ -245,7 +245,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listadetalle")]
-        public IActionResult ListaDetalle(Class.JsonBody jsonbody)
+        public IActionResult ListaDetalle(ListaDetalleClass listadet)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -267,13 +267,13 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listadet.anulado == 1)
                 {
-                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
+                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ID_DOCUMENTO_FK = " + listadet.iddocumento + " ORDER BY ORDEN ASC";
                 }
                 else
                 {
-                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + jsonbody.iddocumento + " ORDER BY ORDEN ASC";
+                    strSQL = "SELECT * FROM ADMIN.LDETALLE WHERE ANULADO = 0 AND ID_DOCUMENTO_FK = " + listadet.iddocumento + " ORDER BY ORDEN ASC";
                 }
                 
 
@@ -358,7 +358,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listaproducto")]
-        public IActionResult ListaProducto(Class.JsonBody jsonbody)
+        public IActionResult ListaProducto(ListaProductoClass listaprod)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -380,7 +380,7 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listaprod.anulado == 1)
                 {
                     strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO ORDER BY ORDEN ASC";
                 }
@@ -461,7 +461,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listacentrocosto")]
-        public IActionResult ListaCentroCosto(Class.JsonBody jsonbody)
+        public IActionResult ListaCentroCosto(ListaCentroCostoClass listacentrocosto)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -483,7 +483,7 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listacentrocosto.anulado == 1)
                 {
                     strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO ORDER BY ORDEN ASC";
                 }
@@ -517,7 +517,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listausuarioexterno")]
-        public IActionResult ListaUsuariosExternos(Class.JsonBody jsonbody)
+        public IActionResult ListaUsuariosExternos(ListaUsuariosExternosClass listausuext)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -539,12 +539,12 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL = ""; ;
-                if (jsonbody.tiposeleccionarusuario == 1)
+                if (listausuext.tipousuarioexterno == 1)
                 {
                     strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
                     strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
-                    strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + jsonbody.busquedalibre + "%'";
-                    if (jsonbody.anulado == 0)
+                    strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + listausuext.nombreusuarioexterno + "%'";
+                    if (listausuext.anulado == 0)
                     {
                         strSQL += " AND UX.ANULADO = 0";
                     }
@@ -581,7 +581,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listaubicacion")]
-        public IActionResult ListaUbicacion(Class.JsonBody jsonbody)
+        public IActionResult ListaUbicacion(ListaUbicacionClass listaubi)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -603,11 +603,11 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL = ""; ;
-                if (jsonbody.tiposeleccionarubicacion == 1)
+                if (listaubi.tipoubicacion == 1)
                 {
                     strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
                     strSQL += "WHERE PRESTAR = 1";
-                    if (jsonbody.anulado == 0)
+                    if (listaubi.anulado == 0)
                     {
                         strSQL += " AND UBI.ANULADO = 0";
                     }
@@ -690,7 +690,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("validarubicacion")]
-        public IActionResult ValidarUbicacion(Class.JsonBody jsonbody)
+        public IActionResult ValidarUbicacion(ValidarUbicacionClass validarubi)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -715,7 +715,7 @@ namespace APISICA.Controllers
                 {
                     conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
                     conn.Conectar();
-                    string strSQL = "SELECT NVL(ID_UBICACION, 0) FROM ADMIN.UBICACION UBI WHERE UPPER(NOMBRE_UBICACION) = UPPER('" + jsonbody.strubicacion + "') AND ANULADO = 0";
+                    string strSQL = "SELECT NVL(ID_UBICACION, 0) FROM ADMIN.UBICACION UBI WHERE UPPER(NOMBRE_UBICACION) = UPPER('" + validarubi.strubicacion + "') AND ANULADO = 0";
                     int i = conn.EjecutarQueryEscalar(strSQL);
                     conn.Cerrar();
 
@@ -742,7 +742,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("obtenercaja")]
-        public IActionResult ObtenerCaja(Class.JsonBody jsonbody)
+        public IActionResult ObtenerCaja(CajaObtenerClass obtenercaja)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -799,7 +799,7 @@ namespace APISICA.Controllers
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
                             LEFT JOIN ADMIN.LESTADO EST
                                 ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
-                    strSQL += " WHERE NUMERO_DE_CAJA = '" + jsonbody.numerocaja + "'";
+                    strSQL += " WHERE NUMERO_DE_CAJA = '" + obtenercaja.numerocaja + "'";
 
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -827,7 +827,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("iddepartamento")]
-        public IActionResult IdDepartamento(Class.JsonBody jsonbody)
+        public IActionResult IdDepartamento(ValidarDepartamentoClass validardep)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -847,7 +847,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 AND NOMBRE_DEPARTAMENTO = " + jsonbody.strdepartamento;
+                string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE ANULADO = 0 AND NOMBRE_DEPARTAMENTO = " + validardep.strdepartamento;
 
                 Conexion conn = new Conexion();
                 try
@@ -868,12 +868,6 @@ namespace APISICA.Controllers
             {
                 return Unauthorized("No se recibió bearer token");
             }
-        }
-
-        [HttpGet("prueba")]
-        public IActionResult Prueba()
-        {
-            return Ok("Phonk");
         }
     }
 }

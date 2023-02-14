@@ -20,7 +20,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("buscar")]
-        public IActionResult Buscar(Class.JsonBody jsonbody)
+        public IActionResult Buscar(CarritoBuscarClass buscar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -41,14 +41,14 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
                 string strSQL = "";
-                if (jsonbody.tipocarrito == _configuration.GetSection("TipoCarrito:RecibirPagare").Value || jsonbody.tipocarrito == _configuration.GetSection("TipoCarrito:EntregarPagare").Value)
+                if (buscar.tipocarrito == _configuration.GetSection("TipoCarrito:RecibirPagare").Value || buscar.tipocarrito == _configuration.GetSection("TipoCarrito:EntregarPagare").Value)
                 {
                     strSQL = "SELECT ID_TMP_CARRITO AS ID, NUMEROSOLICITUD, CODIGO_SOCIO, NOMBRE_SOCIO";
                     strSQL += " FROM ADMIN.PAGARE PA LEFT JOIN ADMIN.TMP_CARRITO TC ON TC.ID_AUX_FK = PA.ID_PAGARE";
-                    strSQL += " WHERE TC.TIPO = '" + jsonbody.tipocarrito + "'";
+                    strSQL += " WHERE TC.TIPO = '" + buscar.tipocarrito + "'";
                     strSQL += " AND TC.ID_USUARIO_FK = " + cuenta.IdUser;
                 }
-                else if (jsonbody.tipocarrito == _configuration.GetSection("TipoCarrito:VerificarCaja").Value)
+                else if (buscar.tipocarrito == _configuration.GetSection("TipoCarrito:VerificarCaja").Value)
                 {
                     strSQL = @"SELECT NUMERO_DE_CAJA,
                         CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
@@ -77,7 +77,7 @@ namespace APISICA.Controllers
                                 ON IG.ID_USUARIO_POSEE_FK = USUEX.ID_USUARIO_EXTERNO
                             LEFT JOIN ADMIN.CENTRO_COSTO CC
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
-                            WHERE NUMERO_DE_CAJA = '" + jsonbody.numerocaja + "' AND ID_USUARIO_POSEE_FK <> " + cuenta.IdUser + "";
+                            WHERE NUMERO_DE_CAJA = '" + buscar.numerocaja + "' AND ID_USUARIO_POSEE_FK <> " + cuenta.IdUser + "";
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace APISICA.Controllers
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO
                             LEFT JOIN ADMIN.LESTADO EST
                                 ON IG.ID_ESTADO_FK = EST.ID_ESTADO";
-                    strSQL += " WHERE TC.TIPO = '" + jsonbody.tipocarrito + "' AND TC.ID_USUARIO_FK = " + cuenta.IdUser;
+                    strSQL += " WHERE TC.TIPO = '" + buscar.tipocarrito + "' AND TC.ID_USUARIO_FK = " + cuenta.IdUser;
                     strSQL += " ORDER BY NUMERO_DE_CAJA";
                 }
 
@@ -138,7 +138,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("eliminar")]
-        public IActionResult Eliminar(Class.JsonBody jsonbody)
+        public IActionResult Eliminar(CarritoEliminarClass eliminar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -159,7 +159,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "DELETE FROM ADMIN.TMP_CARRITO WHERE ID_TMP_CARRITO = " + jsonbody.idaux;
+                string strSQL = "DELETE FROM ADMIN.TMP_CARRITO WHERE ID_TMP_CARRITO = " + eliminar.idcarrito;
 
                 Conexion conn = new Conexion();
                 try
@@ -184,7 +184,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("cantidadcarrito")]
-        public IActionResult CantidadCarrito(Class.JsonBody jsonbody)
+        public IActionResult CantidadCarrito(CarritoCantidadClass cantidad)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -204,7 +204,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT COUNT(*) FROM ADMIN.TMP_CARRITO WHERE TIPO = '" + jsonbody.tipocarrito + "' AND ID_USUARIO_FK = " + cuenta.IdUser;
+                string strSQL = "SELECT COUNT(*) FROM ADMIN.TMP_CARRITO WHERE TIPO = '" + cantidad.tipocarrito + "' AND ID_USUARIO_FK = " + cuenta.IdUser;
 
                 Conexion conn = new Conexion();
                 try
@@ -228,7 +228,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("verificarcarrito")]
-        public IActionResult VerificarCarrito(Class.JsonBody jsonbody)
+        public IActionResult VerificarCarrito(VerificarCarritoClass verificar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -248,7 +248,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT COUNT(*) FROM ADMIN.INVENTARIO_GENERAL WHERE NUMERO_DE_CAJA = '" + jsonbody.numerocaja + "' AND ID_USUARIO_POSEE <> " + cuenta.IdUser;
+                string strSQL = "SELECT COUNT(*) FROM ADMIN.INVENTARIO_GENERAL WHERE NUMERO_DE_CAJA = '" + verificar.numerocaja + "' AND ID_USUARIO_POSEE <> " + cuenta.IdUser;
 
                 Conexion conn = new Conexion();
                 try
@@ -324,7 +324,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("obtenercarrito")]
-        public IActionResult ObternerCarrito(Class.JsonBody jsonbody)
+        public IActionResult ObternerCarrito(CarritoObtenerClass obtener)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -360,7 +360,7 @@ namespace APISICA.Controllers
                                 ON IG.ID_PRODUCTO_FK = LPRO.ID_PRODUCTO
                             LEFT JOIN ADMIN.CENTRO_COSTO CC
                                 ON IG.ID_CENTRO_COSTO_FK = CC.ID_CENTRO_COSTO";
-                strSQL += " WHERE TIPO = '" + jsonbody.tipocarrito + "' AND ID_USUARIO_FK = " + cuenta.IdUser;
+                strSQL += " WHERE TIPO = '" + obtener.tipocarrito + "' AND ID_USUARIO_FK = " + cuenta.IdUser;
 
                 Conexion conn = new Conexion();
                 try
