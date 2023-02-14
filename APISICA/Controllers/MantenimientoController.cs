@@ -18,57 +18,9 @@ namespace APISICA.Controllers
         }
 
 
-        [HttpPost("buscarcuenta")]
-        public IActionResult ListaCuentas(Class.JsonBody jsonbody)
-        {
-            string authHeader = Request.Headers["Authorization"];
-            if (authHeader != null && authHeader.StartsWith("Bearer"))
-            {
-                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
-                DataTable dt;
-                Cuenta cuenta;
-                try
-                {
-                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                if (!(cuenta.IdUser > 0))
-                {
-                    return Unauthorized("Sesion no encontrada");
-                }
-
-                string strSQL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.EMAIL, U.ANULADO AS DESHABILITADO FROM ADMIN.USUARIO U ORDER BY ORDEN ASC";
-
-                Conexion conn = new Conexion();
-                try
-                {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                    conn.Conectar();
-                    dt = conn.LlenarDataTable(strSQL);
-                    conn.Cerrar();
-
-                    string json = JsonConvert.SerializeObject(dt);
-                    return Ok(json);
-                }
-                catch (Exception ex)
-                {
-                    conn.Cerrar();
-                    return BadRequest(ex.Message);
-                }
-            }
-            else
-            {
-                return Unauthorized("No se recibió bearer token");
-            }
-            
-        }
-
 
         [HttpPost("crearusuarioexterno")]
-        public IActionResult CrearUsuarioExterno(Class.JsonBody jsonbody)
+        public IActionResult UsuarioExternoCrear(UsuarioExternoCrearClass usuext)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -88,7 +40,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + jsonbody.nombreusuario + "'";
+                string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + usuext.nombreusuario + "'";
 
                 Conexion conn = new Conexion();
                 try
@@ -102,7 +54,7 @@ namespace APISICA.Controllers
                         int orden = conn.EjecutarQueryEscalar(strSQL);
 
                         strSQL = "INSERT INTO ADMIN.USUARIO_EXTERNO (NOMBRE_USUARIO_EXTERNO, EMAIL, NOTIFICAR, ORDEN, ID_AREA_FK, ANULADO)";
-                        strSQL += " VALUES ('" + jsonbody.nombreusuario + "', '" + jsonbody.correousuario + "', " + jsonbody.notificar + ", " + orden + ", " + jsonbody.idarea + ", 0)";
+                        strSQL += " VALUES ('" + usuext.nombreusuario + "', '" + usuext.correousuario + "', " + usuext.notificar + ", " + orden + ", " + usuext.idarea + ", 0)";
                         strSQL += " RETURNING ID_USUARIO_EXTERNO INTO :numero";
                         int id = conn.InsertReturnID(strSQL);
 
@@ -135,7 +87,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("modificarusuarioexterno")]
-        public IActionResult ModificarUsuarioExterno(Class.JsonBody jsonbody)
+        public IActionResult ModificarUsuarioExterno(UsuarioExternoModificarClass usuext)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -155,7 +107,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + jsonbody.nombreusuario + "'";
+                string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO_EXTERNO WHERE NOMBRE_USUARIO_EXTERNO = '" + usuext.nombreusuario + "'";
 
                 Conexion conn = new Conexion();
                 try
@@ -167,7 +119,7 @@ namespace APISICA.Controllers
                     if (cont == 0)
                     {*/
 
-                    strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET NOMBRE_USUARIO_EXTERNO = '" + jsonbody.nombreusuario + "', EMAIL = '" + jsonbody.correousuario + "', NOTIFICAR = " + jsonbody.notificar + ", ID_AREA_FK = " + jsonbody.idarea + " WHERE ID_USUARIO_EXTERNO = " + jsonbody.idaux;
+                    strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET NOMBRE_USUARIO_EXTERNO = '" + usuext.nombreusuario + "', EMAIL = '" + usuext.correousuario + "', NOTIFICAR = " + usuext.notificar + ", ID_AREA_FK = " + usuext.idarea + " WHERE ID_USUARIO_EXTERNO = " + usuext.idaux;
 
                     conn.EjecutarQuery(strSQL);
 
@@ -194,177 +146,8 @@ namespace APISICA.Controllers
             
         }
 
-        [HttpPost("crearusuario")]
-        public IActionResult CrearUsuario(Class.JsonBody jsonbody)
-        {
-            string authHeader = Request.Headers["Authorization"];
-            if (authHeader != null && authHeader.StartsWith("Bearer"))
-            {
-                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
-                Cuenta cuenta;
-                string connstr = "";
-                try
-                {
-                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                if (!(cuenta.IdUser > 0))
-                {
-                    return Unauthorized("Sesion no encontrada");
-                }
-
-                if (jsonbody.idaux == Int32.Parse(_configuration.GetSection("Area:Custodia").Value))
-                {
-                    connstr = "Custodia1";
-                }
-                else
-                {
-                    connstr = "Default1";
-                }
-
-                string strSQL = "SELECT COUNT(*) FROM ADMIN.USUARIO WHERE NOMBRE_USUARIO = '" + jsonbody.nombreusuario + "'";
-
-                Conexion conn = new Conexion();
-                try
-                {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                    conn.Conectar();
-                    int cont = conn.EjecutarQueryEscalar(strSQL);
-                    if (cont == 0)
-                    {
-                        strSQL = "SELECT MAX(ORDEN) + 1 FROM ADMIN.USUARIO";
-                        int orden = conn.EjecutarQueryEscalar(strSQL);
-
-                        strSQL = "INSERT INTO ADMIN.USUARIO (NOMBRE_USUARIO, REAL, CAMBIAR_PASSWORD, ORDEN, CERRAR_SESION, DATAMANAGER, PASSWORDHASH, PASSWORDSALT, EMAIL, CONNUSER, ANULADO, ACCESO_PERMITIDO)";
-                        strSQL += " VALUES ('" + jsonbody.nombreusuario + "', " + "1, 1, " + orden + ", 0, 0, '" + _configuration.GetSection("DefaultPassword:hash").Value + "', '" + _configuration.GetSection("DefaultPassword:salt").Value + "', '" + jsonbody.correousuario + "', '" + connstr + "', 0, 0)";
-                        strSQL += " RETURNING ID_USUARIO INTO :numero";
-                        int id = conn.InsertReturnID(strSQL);
-                        if (id <= 0)
-                        {
-                            return BadRequest("Error Creando Usuario");
-                        }
-                        strSQL = "INSERT INTO ADMIN.PERMISO (ID_USUARIO_FK, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR, ENTREGAR, ENTREGAR_EXPEDIENTE, ENTREGAR_DOCUMENTO, RECIBIR, RECIBIR_NUEVO, RECIBIR_REINGRESO, RECIBIR_CONFIRMAR, RECIBIR_MANUAL, PAGARE, PAGARE_BUSCAR, PAGARE_RECIBIR, PAGARE_ENTREGAR, LETRA, LETRA_NUEVO, LETRA_ENTREGAR, LETRA_REINGRESO, LETRA_BUSCAR, IRONMOUNTAIN, IRONMOUNTAIN_SOLICITAR, IRONMOUNTAIN_RECIBIR, IRONMOUNTAIN_ARMAR, IRONMOUNTAIN_ENVIAR, IRONMOUNTAIN_ENTREGAR, IRONMOUNTAIN_CARGO, BOVEDA, BOVEDA_CAJA_RETIRAR, BOVEDA_CAJA_GUARDAR, BOVEDA_DOCUMENTO_RETIRAR, BOVEDA_DOCUMENTO_GUARDAR, MANTENIMIENTO, MANTENIMIENTO_CUENTA, MANTENIMIENTO_CREDITO, MANTENIMIENTO_SOCIO, IMPORTAR, IMPORTAR_ACTIVAS, IMPORTAR_PASIVAS, NIVEL)";
-                        if (jsonbody.idaux == Int32.Parse(_configuration.GetSection("Area:Custodia").Value))
-                        {
-                            //ID, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR
-                            strSQL += " VALUES (" + id + ", 1, 1, 1,";
-                            //ENTREGAR, ENTREGAR_EXPEDIENTE, ENTREGAR_DOCUMENTO
-                            strSQL += " 1, 1, 1,";
-                            //RECIBIR, RECIBIR_NUEVO, RECIBIR_REINGRESO, RECIBIR_CONFIRMAR, RECIBIR_MANUAL
-                            strSQL += " 1, 1, 1, 1, 1,";
-                            //PAGARE, PAGARE_BUSCAR, PAGARE_RECIBIR, PAGARE_ENTREGAR
-                            strSQL += " 1, 1, 1, 1,";
-                            //LETRA, LETRA_NUEVO, LETRA_ENTREGAR, LETRA_REINGRESO, LETRA_BUSCAR
-                            strSQL += " 0, 0, 0, 0, 0,";
-                            //IRONMOUNTAIN, IRONMOUNTAIN_SOLICITAR, IRONMOUNTAIN_RECIBIR, IRONMOUNTAIN_ARMAR, IRONMOUNTAIN_ENVIAR, IRONMOUNTAIN_ENTREGAR, IRONMOUNTAIN_CARGO
-                            strSQL += " 0, 0, 0, 0, 0, 0, 0,";
-                            //BOVEDA, BOVEDA_CAJA_RETIRAR, BOVEDA_CAJA_GUARDAR, BOVEDA_DOCUMENTO_RETIRAR, BOVEDA_DOCUMENTO_GUARDAR
-                            strSQL += " 1, 1, 1, 1, 1,";
-                            //MANTENIMIENTO, MANTENIMIENTO_CUENTA, MANTENIMIENTO_CREDITO, MANTENIMIENTO_SOCIO
-                            strSQL += " 1, 1, 1, 1,";
-                            //IMPORTAR, IMPORTAR_ACTIVAS, IMPORTAR_PASIVAS, NIVEL
-                            strSQL += " 0, 0, 0, 2)";
-                        }
-                        else
-                        {
-                            //ID, BUSQUEDA, BUSQUEDA_HISTORICO, BUSQUEDA_EDITAR
-                            strSQL += " VALUES (" + id + ", 1, 1, 0,";
-                            //ENTREGAR, ENTREGAR_EXPEDIENTE, ENTREGAR_DOCUMENTO
-                            strSQL += " 1, 1, 1,";
-                            //RECIBIR, RECIBIR_NUEVO, RECIBIR_REINGRESO, RECIBIR_CONFIRMAR, RECIBIR_MANUAL
-                            strSQL += " 1, 0, 0, 1, 0,";
-                            //PAGARE, PAGARE_BUSCAR, PAGARE_RECIBIR, PAGARE_ENTREGAR
-                            strSQL += " 1, 1, 0, 0,";
-                            //LETRA, LETRA_NUEVO, LETRA_ENTREGAR, LETRA_REINGRESO, LETRA_BUSCAR
-                            strSQL += " 0, 0, 0, 0, 0,";
-                            //IRONMOUNTAIN, IRONMOUNTAIN_SOLICITAR, IRONMOUNTAIN_RECIBIR, IRONMOUNTAIN_ARMAR, IRONMOUNTAIN_ENVIAR, IRONMOUNTAIN_ENTREGAR, IRONMOUNTAIN_CARGO
-                            strSQL += " 0, 0, 0, 0, 0, 0, 0,";
-                            //BOVEDA, BOVEDA_CAJA_RETIRAR, BOVEDA_CAJA_GUARDAR, BOVEDA_DOCUMENTO_RETIRAR, BOVEDA_DOCUMENTO_GUARDAR
-                            strSQL += " 0, 0, 0, 0, 0,";
-                            //MANTENIMIENTO, MANTENIMIENTO_CUENTA, MANTENIMIENTO_CREDITO, MANTENIMIENTO_SOCIO
-                            strSQL += " 0, 0, 0, 0,";
-                            //IMPORTAR, IMPORTAR_ACTIVAS, IMPORTAR_PASIVAS, NIVEL
-                            strSQL += " 0, 0, 0, 2)";
-                        }
-                        conn.EjecutarQuery(strSQL);
-                        conn.Cerrar();
-
-                        return Ok();
-                    }
-                    else
-                    {
-                        conn.Cerrar();
-                        return BadRequest("Usuario Duplicado");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    conn.Cerrar();
-                    return BadRequest(ex.Message);
-                }
-            }
-            else
-            {
-                return Unauthorized("No se recibió bearer token");
-            }
-            
-        }
-
-
-        [HttpPost("datousuario")]
-        public IActionResult DatoCuenta(Class.JsonBody jsonbody)
-        {
-            string authHeader = Request.Headers["Authorization"];
-            if (authHeader != null && authHeader.StartsWith("Bearer"))
-            {
-                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
-                DataTable dt;
-                Cuenta cuenta;
-                try
-                {
-                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                if (!(cuenta.IdUser > 0))
-                {
-                    return Unauthorized("Sesion no encontrada");
-                }
-
-                string strSQL = "SELECT * FROM ADMIN.USUARIO WHERE ID_USUARIO = " + jsonbody.idaux + "";
-
-                Conexion conn = new Conexion();
-                try
-                {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                    conn.Conectar();
-                    dt = conn.LlenarDataTable(strSQL);
-
-                    conn.Cerrar();
-
-                    string json = JsonConvert.SerializeObject(dt);
-                    return Ok(json);
-                }
-                catch (Exception ex)
-                {
-                    conn.Cerrar();
-                    return BadRequest(ex.Message);
-                }
-            }
-            else
-            {
-                return Unauthorized("No se recibió bearer token");
-            }
-        }
-
-
         [HttpPost("usuarioexternoorden")]
-        public IActionResult UsuarioExternoOrden(Class.JsonBody jsonbody)
+        public IActionResult UsuarioExternoOrden(UsuarioExternoOrdenClass usuext)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -384,7 +167,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + jsonbody.idaux + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + jsonbody.idaux + ") + (" + jsonbody.ordendif + ")";
+                string strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + usuext.idusuarioexterno + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + usuext.idusuarioexterno + ") + (" + usuext.ordendif + ")";
 
                 Conexion conn = new Conexion();
                 try
@@ -393,7 +176,7 @@ namespace APISICA.Controllers
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + jsonbody.idaux + ") + (" + jsonbody.ordendif + ") WHERE ID_USUARIO_EXTERNO = " + jsonbody.idaux;
+                    strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET ORDEN = (SELECT ORDEN FROM ADMIN.USUARIO_EXTERNO WHERE ID_USUARIO_EXTERNO = " + usuext.idusuarioexterno + ") + (" + usuext.ordendif + ") WHERE ID_USUARIO_EXTERNO = " + usuext.idusuarioexterno;
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
 
@@ -413,7 +196,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("departamentoagregar")]
-        public IActionResult DepartamentoAgregar(Class.JsonBody jsonbody)
+        public IActionResult DepartamentoAgregar(MantenimientoDepartamentoAgregarClass depagregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -433,7 +216,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDEPARTAMENTO (ID_DEPARTAMENTO, NOMBRE_DEPARTAMENTO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_DEPARTAMENTO),0)+1 FROM ADMIN.LDEPARTAMENTO), '" + jsonbody.strdepartamento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDEPARTAMENTO), 0)";
+                string strSQL = "INSERT INTO ADMIN.LDEPARTAMENTO (ID_DEPARTAMENTO, NOMBRE_DEPARTAMENTO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_DEPARTAMENTO),0)+1 FROM ADMIN.LDEPARTAMENTO), '" + depagregar.strdepartamento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDEPARTAMENTO), 0)";
                 
                 Conexion conn = new Conexion();
                 try

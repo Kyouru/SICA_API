@@ -76,7 +76,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listaarea")]
-        public IActionResult ListaArea(Class.JsonBody jsonbody)
+        public IActionResult ListaArea(ListaAreaClass listaarea)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -97,7 +97,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listaarea.anulado == 1)
                 {
                     strSQL = "SELECT * FROM ADMIN.LAREA ORDER BY ORDEN ASC";
                 }

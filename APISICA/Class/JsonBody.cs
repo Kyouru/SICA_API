@@ -13,7 +13,6 @@
         public int idclasificacion { get; set; } = -1;
         public int idproducto { get; set; } = -1;
         public int idubicacion { get; set; } = -1;
-        public string tipocarrito { get; set; } = string.Empty;
         public string numerocaja { get; set; } = string.Empty;
         public string busquedalibre { get; set; } = string.Empty;
         public string fecha { get; set; } = string.Empty;
@@ -23,7 +22,6 @@
         public string fechadesde { get; set; } = string.Empty;
         public string fechahasta { get; set; } = string.Empty;
         public string observacion { get; set; } = string.Empty;
-        public int entransito { get; set; } = -1;
         public int anulado { get; set; } = -1;
         public string strdepartamento { get; set; } = string.Empty;
         public string strdocumento { get; set; } = string.Empty;
@@ -35,7 +33,6 @@
         public int idubicacionrecibe { get; set; } = -1;
         public bool pendienteok { get; set; } = false;
         public bool modificado { get; set; } = false;
-        public int idrecibe { get; set; } = -1;
         public string nombreusuario { get; set; } = string.Empty;
         public string correousuario { get; set; } = string.Empty;
         public int notificar { get; set; } = -1;

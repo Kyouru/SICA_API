@@ -19,7 +19,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("buscar")]
-        public IActionResult Buscar(Class.JsonBody jsonbody)
+        public IActionResult Buscar(EntregarBuscarClass entregarbuscar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -72,11 +72,12 @@ namespace APISICA.Controllers
                 strSQL += " WHERE TC.ID_TMP_CARRITO IS NULL";
                 strSQL += " AND UBI.PRESTAR = 1 ";
 
-                if (jsonbody.busquedalibre != "")
-                    strSQL += " AND DESC_CONCAT LIKE '%" + jsonbody.busquedalibre + "%'";
-                if (jsonbody.entransito == 0)
+                if (entregarbuscar.busquedalibre != "")
+                    strSQL += " AND DESC_CONCAT LIKE '%" + entregarbuscar.busquedalibre + "%'";
+                /*
+                if (entregarbuscar.entransito == 0)
                     strSQL += " AND ID_ESTADO_FK <> " + _configuration.GetSection("Estados:Transito").Value;
-
+                */
                 Conexion conn = new Conexion();
                 try
                 {
@@ -102,7 +103,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("entregar")]
-        public IActionResult Entregar(Class.JsonBody jsonbody)
+        public IActionResult Entregar(EntregarClass entregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -128,19 +129,19 @@ namespace APISICA.Controllers
                 try
                 {
                     conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
-                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario;
+                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + entregar.idinventario;
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
                     strSQL = @"INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, ID_INVENTARIO_GENERAL_FK,
                             FECHA_INICIO, OBSERVACION, FECHA_FIN, RECIBIDO, ANULADO, USUARIO, FECHA)
-                            VALUES ((SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "), " + jsonbody.idubicacionrecibe + ", " + cuenta.IdUser + ", " + jsonbody.idrecibe + ", " + jsonbody.idinventario + ", TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsonbody.observacion + "',";
-                    strSQL += " TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0, " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
+                            VALUES ((SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + entregar.idinventario + "), " + entregar.idubicacionrecibe + ", " + cuenta.IdUser + ", " + entregar.idrecibe + ", " + entregar.idinventario + ", TO_DATE('" + entregar.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + entregar.observacion + "',";
+                    strSQL += " TO_DATE('" + entregar.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), 1, 0, " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
 
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + jsonbody.idestado + ", ID_UBICACION_FK = " + jsonbody.idubicacionrecibe + ", ID_USUARIO_POSEE_FK = " + jsonbody.idrecibe;
-                    strSQL += " WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
+                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + entregar.idestado + ", ID_UBICACION_FK = " + entregar.idubicacionrecibe + ", ID_USUARIO_POSEE_FK = " + entregar.idrecibe;
+                    strSQL += " WHERE ID_INVENTARIO_GENERAL = " + entregar.idinventario + "";
 
                     conn.EjecutarQuery(strSQL);
 

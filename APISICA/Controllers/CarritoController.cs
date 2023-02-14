@@ -387,7 +387,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("agregarcarrito")]
-        public IActionResult AgregarCarrito(Class.JsonBody jsonbody)
+        public IActionResult AgregarCarrito(CarritoAgregarClass carritoagregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -410,7 +410,7 @@ namespace APISICA.Controllers
                 string strSQL;
 
                 strSQL = "INSERT INTO ADMIN.TMP_CARRITO (ID_INVENTARIO_GENERAL_FK, ID_AUX_FK, ID_USUARIO_FK, TIPO, NUMERO_CAJA) VALUES (";
-                strSQL += jsonbody.idinventario + ", " + jsonbody.idaux + ", " + cuenta.IdUser + ", '" + jsonbody.tipocarrito + "', '" + jsonbody.numerocaja + "')";
+                strSQL += carritoagregar.idinventario + ", " + carritoagregar.idaux + ", " + cuenta.IdUser + ", '" + carritoagregar.tipocarrito + "', '" + carritoagregar.numerocaja + "')";
 
 
                 Conexion conn = new Conexion();
