@@ -21,7 +21,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("agregar")]
-        public IActionResult AgregarRecibir(Class.JsonBody jsonbody)
+        public IActionResult AgregarRecibir(RecibirAgregarClass recagregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -43,65 +43,65 @@ namespace APISICA.Controllers
 
                 string strSQL = @"INSERT INTO ADMIN.INVENTARIO_GENERAL (NUMERO_DE_CAJA, ID_DEPARTAMENTO_FK, ID_DOCUMENTO_FK, ID_DETALLE_FK, ID_CLASIFICACION_FK,
                             ID_PRODUCTO_FK, ID_CENTRO_COSTO_FK, ID_USUARIO_REGISTRA_FK, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD, OBSERVACION,
-                            FECHA_DESDE, FECHA_HASTA, FECHA_MODIFICA, FECHA_POSEE, ID_UBICACION_FK, ID_USUARIO_POSEE_FK, ID_ESTADO_FK, FECHA_REGISTRO)";
+                            FECHA_DESDE, FECHA_HASTA, ID_UBICACION_FK, ID_USUARIO_POSEE_FK, ID_ESTADO_FK, FECHA_REGISTRO)";
                 strSQL += " VALUES (";
-                if (jsonbody.numerocaja != "")
+                if (recagregar.numerocaja != "")
                 {
-                    strSQL += "'" + jsonbody.numerocaja + "', ";
+                    strSQL += "'" + recagregar.numerocaja + "', ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.iddepartamento != -1)
+                if (recagregar.iddepartamento != -1)
                 {
-                    strSQL += jsonbody.iddepartamento + ", ";
+                    strSQL += recagregar.iddepartamento + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.iddocumento != -1)
+                if (recagregar.iddocumento != -1)
                 {
-                    strSQL += "" + jsonbody.iddocumento + ", ";
+                    strSQL += "" + recagregar.iddocumento + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.iddetalle != -1)
+                if (recagregar.iddetalle != -1)
                 {
-                    strSQL += "" + jsonbody.iddetalle + ", ";
+                    strSQL += "" + recagregar.iddetalle + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.idclasificacion != -1)
+                if (recagregar.idclasificacion != -1)
                 {
-                    strSQL += "" + jsonbody.idclasificacion + ", ";
+                    strSQL += "" + recagregar.idclasificacion + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.idproducto != -1)
+                if (recagregar.idproducto != -1)
                 {
-                    strSQL += "" + jsonbody.idproducto + ", ";
+                    strSQL += "" + recagregar.idproducto + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
 
-                if (jsonbody.idcentrocosto != -1)
+                if (recagregar.idcentrocosto != -1)
                 {
-                    strSQL += "" + jsonbody.idcentrocosto + ", ";
+                    strSQL += "" + recagregar.idcentrocosto + ", ";
                 }
                 else
                 {
@@ -117,40 +117,22 @@ namespace APISICA.Controllers
                     strSQL += "NULL, ";
                 }
 
-                strSQL += "'" + jsonbody.codigosocio + "', ";
-                strSQL += "'" + jsonbody.nombresocio + "', ";
-                strSQL += "'" + jsonbody.numerosolicitud + "', ";
-                strSQL += "'" + jsonbody.observacion + "', ";
+                strSQL += "'" + recagregar.codigosocio + "', ";
+                strSQL += "'" + recagregar.nombresocio + "', ";
+                strSQL += "'" + recagregar.numerosolicitud + "', ";
+                strSQL += "'" + recagregar.observacion + "', ";
 
-                if (jsonbody.fechadesde != "")
+                if (recagregar.fechadesde != "")
                 {
-                    strSQL += "TO_DATE('" + jsonbody.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS'), ";
+                    strSQL += "TO_DATE('" + recagregar.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS'), ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
-                if (jsonbody.fechahasta != "")
+                if (recagregar.fechahasta != "")
                 {
-                    strSQL += "TO_DATE('" + jsonbody.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS'), ";
-                }
-                else
-                {
-                    strSQL += "NULL, ";
-                }
-                //fechamodifica
-                if (jsonbody.fecha != "")
-                {
-                    strSQL += "TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), ";
-                }
-                else
-                {
-                    strSQL += "NULL, ";
-                }
-                //fechaposee
-                if (jsonbody.fecha != "")
-                {
-                    strSQL += "TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), ";
+                    strSQL += "TO_DATE('" + recagregar.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS'), ";
                 }
                 else
                 {
@@ -158,27 +140,23 @@ namespace APISICA.Controllers
                 }
 
                 //UBICACION
-                if (jsonbody.idubicacionrecibe != -1)
+                /*
+                if (recagregar.idubicacionrecibe != -1)
                 {
-                    strSQL += "" + jsonbody.idubicacionrecibe + ", ";
+                    strSQL += "" + recagregar.idubicacionrecibe + ", ";
                 }
                 else
                 {
                     strSQL += "NULL, ";
                 }
+                */
+                strSQL += "" + _configuration.GetSection("Ubicacion:Valija").Value + ", ";
 
                 strSQL += "" + cuenta.IdUser + ", ";
                 //estado
                 strSQL += _configuration.GetSection("Estados:Custodiado").Value + ", ";
                 //fecharegistra
-                if (jsonbody.fecha != "")
-                {
-                    strSQL += "TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'))";
-                }
-                else
-                {
-                    strSQL += "NULL)";
-                }
+                strSQL += "TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
 
                 strSQL += " RETURNING ID_INVENTARIO_GENERAL INTO :numero";
 
@@ -197,7 +175,7 @@ namespace APISICA.Controllers
                     conn.EjecutarQuery(strSQL);
 
                     strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
-                    strSQL += " VALUES (" + lastinsertid + ", " + jsonbody.idaux + ", " + cuenta.IdUser + ", TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsonbody.observacion + "', 1, 0, " + jsonbody.idubicacionentrega + ", " + jsonbody.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
+                    strSQL += " VALUES (" + lastinsertid + ", " + recagregar.idusuarioentrega + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'), '" + recagregar.observacion + "', 1, 0, " + recagregar.idubicacionentrega + ", " + _configuration.GetSection("Ubicacion:Valija").Value + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
 
                     conn.EjecutarQuery(strSQL);
 
@@ -219,7 +197,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("validar")]
-        public IActionResult RecibirValidar(Class.JsonBody jsonbody)
+        public IActionResult RecibirValidar(RecibirValidarClass recvalidar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -245,7 +223,7 @@ namespace APISICA.Controllers
                     conn.Conectar();
                     int cont, iddepartamento, iddocumento, iddetalle, idclasificacion, idproducto, idcentrocosto;
                     string concat = "";
-                    string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE NOMBRE_DEPARTAMENTO = '" + jsonbody.strdepartamento + "'";
+                    string strSQL = "SELECT ID_DEPARTAMENTO FROM ADMIN.LDEPARTAMENTO WHERE NOMBRE_DEPARTAMENTO = '" + recvalidar.strdepartamento + "'";
                     iddepartamento = conn.EjecutarQueryEscalar(strSQL);
                     if (iddepartamento > 0)
                     {
@@ -256,7 +234,7 @@ namespace APISICA.Controllers
                         return BadRequest("Error Departamento");
                     }
 
-                    strSQL = "SELECT ID_DOCUMENTO FROM ADMIN.LDOCUMENTO WHERE NOMBRE_DOCUMENTO = '" + jsonbody.strdocumento + "' AND ID_DEPARTAMENTO_FK = " + iddepartamento;
+                    strSQL = "SELECT ID_DOCUMENTO FROM ADMIN.LDOCUMENTO WHERE NOMBRE_DOCUMENTO = '" + recvalidar.strdocumento + "' AND ID_DEPARTAMENTO_FK = " + iddepartamento;
                     //conn.Conectar();
                     iddocumento = conn.EjecutarQueryEscalar(strSQL);
                     if (iddocumento > 0)
@@ -268,7 +246,7 @@ namespace APISICA.Controllers
                         return BadRequest("Error Documento\n" + strSQL);
                     }
 
-                    strSQL = "SELECT ID_DETALLE FROM ADMIN.LDETALLE WHERE NOMBRE_DETALLE = '" + jsonbody.strdetalle + "' AND ID_DOCUMENTO_FK = " + iddocumento;
+                    strSQL = "SELECT ID_DETALLE FROM ADMIN.LDETALLE WHERE NOMBRE_DETALLE = '" + recvalidar.strdetalle + "' AND ID_DOCUMENTO_FK = " + iddocumento;
                     //conn.Conectar();
                     iddetalle = conn.EjecutarQueryEscalar(strSQL);
                     if (iddetalle > 0)
@@ -280,7 +258,7 @@ namespace APISICA.Controllers
                         return Ok("Error Detalle");
                     }
 
-                    strSQL = "SELECT ID_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE NOMBRE_CLASIFICACION = '" + jsonbody.strclasificacion + "'";
+                    strSQL = "SELECT ID_CLASIFICACION FROM ADMIN.LCLASIFICACION WHERE NOMBRE_CLASIFICACION = '" + recvalidar.strclasificacion + "'";
                     // conn.Conectar();
                     idclasificacion = conn.EjecutarQueryEscalar(strSQL);
                     if (idclasificacion > 0)
@@ -292,7 +270,7 @@ namespace APISICA.Controllers
                         return Ok("Error Clasificacion");
                     }
 
-                    strSQL = "SELECT ID_PRODUCTO FROM ADMIN.LPRODUCTO WHERE NOMBRE_PRODUCTO = '" + jsonbody.strproducto + "'";
+                    strSQL = "SELECT ID_PRODUCTO FROM ADMIN.LPRODUCTO WHERE NOMBRE_PRODUCTO = '" + recvalidar.strproducto + "'";
                     //conn.Conectar();
                     idproducto = conn.EjecutarQueryEscalar(strSQL);
                     if (idproducto > 0)
@@ -304,7 +282,7 @@ namespace APISICA.Controllers
                         return Ok("Error Producto");
                     }
 
-                    strSQL = "SELECT ID_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO WHERE NOMBRE_CENTRO_COSTO = '" + jsonbody.strcentrocosto + "'";
+                    strSQL = "SELECT ID_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO WHERE NOMBRE_CENTRO_COSTO = '" + recvalidar.strcentrocosto + "'";
                     //conn.Conectar();
                     idcentrocosto = conn.EjecutarQueryEscalar(strSQL);
                     if (idcentrocosto > 0)
@@ -322,16 +300,16 @@ namespace APISICA.Controllers
                     strSQL += "AND ID_CLASIFICACION_FK = " + idclasificacion;
                     strSQL += "AND ID_PRODUCTO_FK = " + idproducto;
                     strSQL += "AND ID_CENTRO_COSTO_FK = " + idcentrocosto;
-                    strSQL += "AND TRIM(CODIGO_SOCIO) = TRIM('" + jsonbody.codigosocio + "')";
-                    strSQL += "AND TRIM(NOMBRE_SOCIO) = TRIM('" + jsonbody.nombresocio + "')";
-                    strSQL += "AND TRIM(NUMEROSOLICITUD) = TRIM('" + jsonbody.numerosolicitud + "')";
-                    if (jsonbody.fechadesde != "")
+                    strSQL += "AND TRIM(CODIGO_SOCIO) = TRIM('" + recvalidar.codigosocio + "')";
+                    strSQL += "AND TRIM(NOMBRE_SOCIO) = TRIM('" + recvalidar.nombresocio + "')";
+                    strSQL += "AND TRIM(NUMEROSOLICITUD) = TRIM('" + recvalidar.numerosolicitud + "')";
+                    if (recvalidar.fechadesde != "")
                     {
-                        strSQL += "AND FECHA_DESDE = TO_DATE('" + jsonbody.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS')";
+                        strSQL += "AND FECHA_DESDE = TO_DATE('" + recvalidar.fechadesde + "', 'YYYY-MM-DD HH24:MI:SS')";
                     }
-                    if (jsonbody.fechahasta != "")
+                    if (recvalidar.fechahasta != "")
                     {
-                        strSQL += "AND FECHA_HASTA = TO_DATE('" + jsonbody.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS')";
+                        strSQL += "AND FECHA_HASTA = TO_DATE('" + recvalidar.fechahasta + "', 'YYYY-MM-DD HH24:MI:SS')";
                     }
 
 
@@ -361,6 +339,7 @@ namespace APISICA.Controllers
             
         }
 
+        /*
         [HttpPost("buscarreingreso")]
         public IActionResult BuscarReingreso(Class.JsonBody jsonbody)
         {
@@ -431,8 +410,9 @@ namespace APISICA.Controllers
 
             
         }
+        */
 
-
+        /*
         [HttpPost("buscarconfirmacionpendiente")]
         public IActionResult BuscarConfirmacionPendiente(Class.JsonBody jsonbody)
         {
@@ -511,9 +491,10 @@ namespace APISICA.Controllers
                 return Unauthorized("No se recibió bearer token");
             }
         }
+        */
 
-        [HttpPost("buscarvalija")]
-        public IActionResult BuscarValija(Class.JsonBody jsonbody)
+        [HttpGet("buscarvalija")]
+        public IActionResult BuscarValija()
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -560,7 +541,7 @@ namespace APISICA.Controllers
                     strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON LDEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK";
                     strSQL += " LEFT JOIN ADMIN.LDETALLE LDET ON LDET.ID_DETALLE = IG.ID_DETALLE_FK";
                     strSQL += " LEFT JOIN ADMIN.LPRODUCTO LPROD ON LPROD.ID_PRODUCTO = IG.ID_PRODUCTO_FK";
-                    strSQL += " WHERE UBI.ID_UBICACION = " + jsonbody.idubicacion; //Valija
+                    strSQL += " WHERE UBI.ID_UBICACION = " + _configuration.GetSection("Ubicacion:Valija").Value;
 
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
@@ -579,8 +560,78 @@ namespace APISICA.Controllers
             {
                 return Unauthorized("No se recibió bearer token");
             }
-            
         }
+
+
+        [HttpGet("buscartransicion")]
+        public IActionResult BuscarTransicion()
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                DataTable dt = new DataTable("BuscarTransicion");
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (cuenta.IdUser <= 0)
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+                Conexion conn = new Conexion();
+                string strSQL = "";
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
+                                CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
+                                     WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
+                                     ELSE UBI.NOMBRE_UBICACION
+                                END AS UBICACION,
+                                NUMERO_DE_CAJA AS CAJA, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD,
+                                TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') AS DESDE, TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy') AS HASTA,
+                                LPROD.NOMBRE_PRODUCTO AS PRODUCTO, LDEP.NOMBRE_DEPARTAMENTO AS DEP,
+                                LDOC.NOMBRE_DOCUMENTO AS DOC, LDET.NOMBRE_DETALLE AS DET, LE.NOMBRE_ESTADO AS ESTADO,
+                                NUMERO_DE_CAJA || CODIGO_SOCIO || NOMBRE_SOCIO || NUMEROSOLICITUD || TO_CHAR(FECHA_DESDE, 'dd/MM/yyyy') ||
+                                TO_CHAR(FECHA_HASTA, 'dd/MM/yyyy')  AS CONCAT";
+                    strSQL += " FROM ADMIN.INVENTARIO_GENERAL IG";
+                    strSQL += " LEFT JOIN ADMIN.LESTADO LE ON LE.ID_ESTADO = IG.ID_ESTADO_FK";
+                    strSQL += " LEFT JOIN ADMIN.LDOCUMENTO DOC ON DOC.ID_DOCUMENTO = IG.ID_DOCUMENTO_FK";
+                    strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO DEP ON DEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK";
+                    strSQL += " LEFT JOIN ADMIN.UBICACION UBI ON UBI.ID_UBICACION = IG.ID_UBICACION_FK";
+                    strSQL += " LEFT JOIN ADMIN.USUARIO USU ON USU.ID_USUARIO = IG.ID_USUARIO_POSEE_FK";
+                    strSQL += " LEFT JOIN ADMIN.USUARIO_EXTERNO USUEX ON USUEX.ID_USUARIO_EXTERNO = IG.ID_USUARIO_POSEE_FK";
+                    strSQL += " LEFT JOIN ADMIN.LDOCUMENTO LDOC ON LDOC.ID_DOCUMENTO = IG.ID_DOCUMENTO_FK";
+                    strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON LDEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK";
+                    strSQL += " LEFT JOIN ADMIN.LDETALLE LDET ON LDET.ID_DETALLE = IG.ID_DETALLE_FK";
+                    strSQL += " LEFT JOIN ADMIN.LPRODUCTO LPROD ON LPROD.ID_PRODUCTO = IG.ID_PRODUCTO_FK";
+                    strSQL += " WHERE UBI.ID_UBICACION = " + _configuration.GetSection("Ubicacion:Transicion").Value;
+
+                    conn.Conectar();
+                    dt = conn.LlenarDataTable(strSQL);
+                    conn.Cerrar();
+
+                    string json = JsonConvert.SerializeObject(dt);
+                    return Ok(json);
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message + strSQL);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
         [HttpGet("buscarpendiente")]
         public IActionResult BuscarPendiente()
         {
@@ -630,10 +681,7 @@ namespace APISICA.Controllers
                     strSQL += " LEFT JOIN ADMIN.LDEPARTAMENTO LDEP ON LDEP.ID_DEPARTAMENTO = IG.ID_DEPARTAMENTO_FK";
                     strSQL += " LEFT JOIN ADMIN.LDETALLE LDET ON LDET.ID_DETALLE = IG.ID_DETALLE_FK";
                     strSQL += " LEFT JOIN ADMIN.LPRODUCTO LPROD ON LPROD.ID_PRODUCTO = IG.ID_PRODUCTO_FK";
-                    //strSQL += " LEFT JOIN (SELECT * FROM ADMIN.LPENDIENTE WHERE TIPO = 1) LP1 ON LP1.ID_LPENDIENTE = IG.ID_LPENNOMBRE_FK";
-                    //strSQL += " LEFT JOIN (SELECT * FROM ADMIN.LPENDIENTE WHERE TIPO = 2) LP2 ON LP2.ID_LPENDIENTE = IG.ID_LPENDETALLE_FK";
-                    //strSQL += " LEFT JOIN (SELECT * FROM ADMIN.LPENDIENTE WHERE TIPO = 3) LP3 ON LP3.ID_LPENDIENTE = IG.ID_LPENBANCA_FK";
-                    strSQL += " WHERE UBI.ID_UBICACION = 9"; //Pendiente
+                    strSQL += " WHERE UBI.ID_UBICACION = " + _configuration.GetSection("Ubicacion:Pendiente").Value;
 
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
@@ -657,7 +705,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("recibir")]
-        public IActionResult Recibir(Class.JsonBody jsonbody)
+        public IActionResult Recibir(RecibirRecibirClass recibir)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -683,15 +731,14 @@ namespace APISICA.Controllers
                     conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
                     conn.Conectar();
                     string strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
-                    strSQL += " VALUES (" + jsonbody.idinventario + ", (SELECT ID_USUARIO_POSEE_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "), " + cuenta.IdUser + ", TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsonbody.observacion + "', 1, 0, (SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "), " + jsonbody.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
+                    strSQL += " VALUES (" + recibir.idinventario + ", (SELECT ID_USUARIO_POSEE_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + recibir.idinventario + "), " + cuenta.IdUser + ", TO_DATE('" + recibir.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + recibir.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + recibir.observacion + "', 1, 0, (SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + recibir.idinventario + "), " + recibir.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + jsonbody.idestado + ", ID_UBICACION_FK = " + jsonbody.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
+                    strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_ESTADO_FK = " + recibir.idestado + ", ID_UBICACION_FK = " + recibir.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + recibir.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + recibir.idinventario + "";
 
                     conn.EjecutarQuery(strSQL);
 
-
-                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
+                    strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + recibir.idinventario + "";
                     conn.EjecutarQuery(strSQL);
 
                     conn.Cerrar();
@@ -713,7 +760,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("ActualizarPendiente")]
-        public IActionResult ActualizarPendiente(Class.JsonBody jsonbody)
+        public IActionResult ActualizarPendiente(GuardarClass recactualizarpen)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -739,21 +786,21 @@ namespace APISICA.Controllers
                     conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
                     conn.Conectar();
 
-                    if (jsonbody.modificado)
+                    if (recactualizarpen.modificado)
                     {
-                        Functions.guardarEditar(conn, cuenta, jsonbody);
+                        Functions.guardarEditar(conn, cuenta, recactualizarpen);
                     }
 
-                    if (jsonbody.pendienteok)
+                    if (recactualizarpen.pendienteok)
                     {
-                        strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_UBICACION_FK = " + jsonbody.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + "";
+                        strSQL = "UPDATE ADMIN.INVENTARIO_GENERAL SET ID_UBICACION_FK = " + recactualizarpen.idubicacionrecibe + ", FECHA_POSEE = TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS') WHERE ID_INVENTARIO_GENERAL = " + recactualizarpen.idinventario + "";
                         conn.EjecutarQuery(strSQL);
 
                         strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
-                        strSQL += " VALUES (" + jsonbody.idinventario + ", " + cuenta.IdUser + ", TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + jsonbody.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + jsonbody.observacion + "', 1, 0, " + jsonbody.idubicacionentrega + ", " + jsonbody.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
+                        strSQL += " VALUES (" + recactualizarpen.idinventario + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'), '" + recactualizarpen.observacion + "', 1, 0, " + _configuration.GetSection("Ubicacion:Pendiente").Value + ", " + recactualizarpen.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
                         conn.EjecutarQuery(strSQL);
 
-                        strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + jsonbody.idinventario + "";
+                        strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + recactualizarpen.idinventario + "";
                         conn.EjecutarQuery(strSQL);
                     }
                     conn.Cerrar();

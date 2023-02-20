@@ -243,7 +243,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("departamentoorden")]
-        public IActionResult DepartamentoOrden(Class.JsonBody jsonbody)
+        public IActionResult DepartamentoOrden(MantenimientoDepartamentoOrdenClass deporden)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -263,7 +263,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + ") + (" + jsonbody.ordendif + ")";
+                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + deporden.iddepartamento + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + deporden.iddepartamento + ") + (" + deporden.ordendif + ")";
 
                 Conexion conn = new Conexion();
                 try
@@ -272,7 +272,7 @@ namespace APISICA.Controllers
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + ") + (" + jsonbody.ordendif + ") WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento;
+                    strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + deporden.iddepartamento + ") + (" + deporden.ordendif + ") WHERE ID_DEPARTAMENTO = " + deporden.iddepartamento;
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
 
@@ -291,7 +291,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("departamentoanular")]
-        public IActionResult DepartamentoAnular(Class.JsonBody jsonbody)
+        public IActionResult DepartamentoAnular(MantenimientoDepartamentoAnularClass depanular)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -311,7 +311,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento + ") WHERE ID_DEPARTAMENTO = " + jsonbody.iddepartamento;
+                string strSQL = "UPDATE ADMIN.LDEPARTAMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDEPARTAMENTO WHERE ID_DEPARTAMENTO = " + depanular.iddepartamento + ") WHERE ID_DEPARTAMENTO = " + depanular.iddepartamento;
                 Conexion conn = new Conexion();
 
                 try
@@ -337,7 +337,7 @@ namespace APISICA.Controllers
 
 
         [HttpPost("documentoagregar")]
-        public IActionResult DocumentoAgregar(Class.JsonBody jsonbody)
+        public IActionResult DocumentoAgregar(MantenimientoDocumentoAgregarClass docagregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -357,7 +357,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDOCUMENTO (ID_DOCUMENTO, NOMBRE_DOCUMENTO, ORDEN, ID_DEPARTAMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DOCUMENTO),0)+1 FROM ADMIN.LDOCUMENTO), '" + jsonbody.strdocumento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDOCUMENTO), " + jsonbody.iddepartamento + ", 0)";
+                string strSQL = "INSERT INTO ADMIN.LDOCUMENTO (ID_DOCUMENTO, NOMBRE_DOCUMENTO, ORDEN, ID_DEPARTAMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DOCUMENTO),0)+1 FROM ADMIN.LDOCUMENTO), '" + docagregar.strdocumento + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDOCUMENTO), " + docagregar.iddepartamento + ", 0)";
 
                 Conexion conn = new Conexion();
                 try
@@ -383,7 +383,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("documentoorden")]
-        public IActionResult DocumentoOrden(Class.JsonBody jsonbody)
+        public IActionResult DocumentoOrden(MantenimientoDocumentoOrdenClass docorden)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -403,7 +403,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + ") + (" + jsonbody.ordendif + ")";
+                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + docorden.iddocumento + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + docorden.iddocumento + ") + (" + docorden.ordendif + ")";
 
                 Conexion conn = new Conexion();
                 try
@@ -412,7 +412,7 @@ namespace APISICA.Controllers
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.LDOCUMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + ") + (" + jsonbody.ordendif + ") WHERE ID_DOCUMENTO = " + jsonbody.iddocumento;
+                    strSQL = "UPDATE ADMIN.LDOCUMENTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + docorden.iddocumento + ") + (" + docorden.ordendif + ") WHERE ID_DOCUMENTO = " + docorden.iddocumento;
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
 
@@ -431,7 +431,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("documentoanular")]
-        public IActionResult DocumentoAnular(Class.JsonBody jsonbody)
+        public IActionResult DocumentoAnular(MantenimientoDocumentoAnularClass docanular)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -451,7 +451,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + jsonbody.iddocumento + ") WHERE ID_DOCUMENTO = " + jsonbody.iddocumento;
+                string strSQL = "UPDATE ADMIN.LDOCUMENTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDOCUMENTO WHERE ID_DOCUMENTO = " + docanular.iddocumento + ") WHERE ID_DOCUMENTO = " + docanular.iddocumento;
                 Conexion conn = new Conexion();
 
                 try
@@ -476,7 +476,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("detalleagregar")]
-        public IActionResult DetalleAgregar(Class.JsonBody jsonbody)
+        public IActionResult DetalleAgregar(MantenimientoDetalleAgregarClass detagregar)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -496,7 +496,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "INSERT INTO ADMIN.LDETALLE (ID_DETALLE, NOMBRE_DETALLE, ORDEN, ID_DOCUMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DETALLE),0)+1 FROM ADMIN.LDETALLE), '" + jsonbody.strdetalle + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDETALLE), " + jsonbody.iddocumento + ", 0)";
+                string strSQL = "INSERT INTO ADMIN.LDETALLE (ID_DETALLE, NOMBRE_DETALLE, ORDEN, ID_DOCUMENTO_FK, ANULADO) VALUES ((SELECT NVL(MAX(ID_DETALLE),0)+1 FROM ADMIN.LDETALLE), '" + detagregar.strdetalle + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LDETALLE), " + detagregar.iddocumento + ", 0)";
 
                 Conexion conn = new Conexion();
                 try
@@ -522,7 +522,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("detalleorden")]
-        public IActionResult DetalleOrden(Class.JsonBody jsonbody)
+        public IActionResult DetalleOrden(MantenimientoDetalleOrdenClass detorden)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -542,7 +542,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDETALLE SET ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + jsonbody.iddetalle + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + jsonbody.iddetalle + ") + (" + jsonbody.ordendif + ")";
+                string strSQL = "UPDATE ADMIN.LDETALLE SET ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + detorden.iddetalle + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + detorden.iddetalle + ") + (" + detorden.ordendif + ")";
 
                 Conexion conn = new Conexion();
                 try
@@ -551,7 +551,7 @@ namespace APISICA.Controllers
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
-                    strSQL = "UPDATE ADMIN.LDETALLE SET ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + jsonbody.iddetalle + ") + (" + jsonbody.ordendif + ") WHERE ID_DETALLE = " + jsonbody.iddetalle;
+                    strSQL = "UPDATE ADMIN.LDETALLE SET ORDEN = (SELECT ORDEN FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + detorden.iddetalle + ") + (" + detorden.ordendif + ") WHERE ID_DETALLE = " + detorden.iddetalle;
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
 
@@ -570,7 +570,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("detalleanular")]
-        public IActionResult DetalleAnular(Class.JsonBody jsonbody)
+        public IActionResult DetalleAnular(MantenimientoDetalleAnularClass detanular)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -590,7 +590,7 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "UPDATE ADMIN.LDETALLE SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + jsonbody.iddetalle + ") WHERE ID_DETALLE = " + jsonbody.iddetalle;
+                string strSQL = "UPDATE ADMIN.LDETALLE SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LDETALLE WHERE ID_DETALLE = " + detanular.iddetalle + ") WHERE ID_DETALLE = " + detanular.iddetalle;
                 Conexion conn = new Conexion();
 
                 try
@@ -613,5 +613,147 @@ namespace APISICA.Controllers
                 return Unauthorized("No se recibió bearer token");
             }
         }
+
+
+        [HttpPost("areaagregar")]
+        public IActionResult AreaAgregar(MantenimientoAreaAgregarClass areaagregar)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "INSERT INTO ADMIN.LAREA (ID_AREA, NOMBRE_AREA, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_AREA),0)+1 FROM ADMIN.LAREA), '" + areaagregar.strarea + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LAREA), 0)";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+
+        [HttpPost("areaorden")]
+        public IActionResult AreaOrden(MantenimientoAreaOrdenClass areaorden)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LAREA SET ORDEN = (SELECT ORDEN FROM ADMIN.LAREA WHERE ID_AREA = " + areaorden.idarea + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LAREA WHERE ID_AREA = " + areaorden.idarea + ") + (" + areaorden.ordendif + ")";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    strSQL = "UPDATE ADMIN.LAREA SET ORDEN = (SELECT ORDEN FROM ADMIN.LAREA WHERE ID_AREA = " + areaorden.idarea + ") + (" + areaorden.ordendif + ") WHERE ID_AREA = " + areaorden.idarea;
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+        [HttpPost("areaanular")]
+        public IActionResult AreaAnular(MantenimientoAreaAnularClass areaanular)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LAREA SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LAREA WHERE ID_AREA = " + areaanular.idarea + ") WHERE ID_AREA = " + areaanular.idarea;
+                Conexion conn = new Conexion();
+
+                try
+                {
+                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
     }
 }

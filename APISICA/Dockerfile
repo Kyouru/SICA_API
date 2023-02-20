@@ -5,6 +5,9 @@ WORKDIR /app
 EXPOSE 5000
 ENV ASPNETCORE_URLS="http://+:5000"
 
+ENV TZ=America/Lima
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["APISICA/APISICA.csproj", "APISICA/"]

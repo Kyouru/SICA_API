@@ -302,7 +302,7 @@ namespace APISICA.Controllers
         }
 
         [HttpPost("listaclasificacion")]
-        public IActionResult ListaClasificacion(Class.JsonBody jsonbody)
+        public IActionResult ListaClasificacion(ListaClasificacionClass listacla)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -324,7 +324,7 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL;
-                if (jsonbody.anulado == 1)
+                if (listacla.anulado == 1)
                 {
                     strSQL = "SELECT ID_CLASIFICACION, NOMBRE_CLASIFICACION FROM ADMIN.LCLASIFICACION ORDER BY ORDEN ASC";
                 }
@@ -412,8 +412,8 @@ namespace APISICA.Controllers
             }
             
         }
-        [HttpGet("listapendientes")]
-        public IActionResult ListaPendientes()
+        [HttpPost("listapendientes")]
+        public IActionResult ListaPendientes(ListaPendienteClass listapen)
         {
             string authHeader = Request.Headers["Authorization"];
             if (authHeader != null && authHeader.StartsWith("Bearer"))
@@ -434,7 +434,15 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
+                string strSQL = "";
+                if (listapen.anulado == 1)
+                {
+                    strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE ORDER BY TIPO ASC, ORDEN ASC";
+                }
+                else
+                {
+                    strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
+                }
 
                 Conexion conn = new Conexion();
                 try
@@ -539,21 +547,14 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL = ""; ;
-                if (listausuext.tipousuarioexterno == 1)
+                strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
+                strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
+                strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + listausuext.nombreusuarioexterno + "%'";
+                if (listausuext.anulado == 0)
                 {
-                    strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
-                    strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
-                    strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + listausuext.nombreusuarioexterno + "%'";
-                    if (listausuext.anulado == 0)
-                    {
-                        strSQL += " AND UX.ANULADO = 0";
-                    }
-                    strSQL += " ORDER BY UX.ORDEN ASC";
+                    strSQL += " AND UX.ANULADO = 0";
                 }
-                else
-                {
-                    strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
-                }
+                strSQL += " ORDER BY UX.ORDEN ASC";
 
                 Conexion conn = new Conexion();
                 try

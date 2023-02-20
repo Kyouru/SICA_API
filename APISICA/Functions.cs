@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
-using JsonBody = APISICA.Class.JsonBody;
 
 namespace APISICA
 {
