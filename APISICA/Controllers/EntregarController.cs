@@ -81,7 +81,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -128,7 +128,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     strSQL = "UPDATE ADMIN.INVENTARIO_HISTORICO SET ANULADO = 1 WHERE RECIBIDO = 0 AND ID_INVENTARIO_GENERAL_FK = " + entregar.idinventario;
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);

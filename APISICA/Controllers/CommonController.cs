@@ -54,7 +54,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -110,7 +110,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -167,7 +167,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -223,7 +223,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -280,7 +280,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -336,7 +336,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -382,17 +382,17 @@ namespace APISICA.Controllers
                 string strSQL;
                 if (listaprod.anulado == 1)
                 {
-                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO ORDER BY ORDEN ASC";
+                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO, ORDEN, ANULADO FROM ADMIN.LPRODUCTO ORDER BY ORDEN ASC";
                 }
                 else
                 {
-                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                    strSQL = "SELECT ID_PRODUCTO, NOMBRE_PRODUCTO, ORDEN, ANULADO FROM ADMIN.LPRODUCTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
                 }
 
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -437,17 +437,17 @@ namespace APISICA.Controllers
                 string strSQL = "";
                 if (listapen.anulado == 1)
                 {
-                    strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE ORDER BY TIPO ASC, ORDEN ASC";
+                    strSQL = "SELECT ID_PENDIENTE, NOMBRE, TIPO, ORDEN, ANULADO FROM ADMIN.LPENDIENTE ORDER BY TIPO ASC, ORDEN ASC";
                 }
                 else
                 {
-                    strSQL = "SELECT NOMBRE, TIPO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
+                    strSQL = "SELECT ID_PENDIENTE, NOMBRE, TIPO, ORDEN, ANULADO FROM ADMIN.LPENDIENTE WHERE ANULADO = 0 ORDER BY TIPO ASC, ORDEN ASC";
                 }
 
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -493,17 +493,17 @@ namespace APISICA.Controllers
                 string strSQL;
                 if (listacentrocosto.anulado == 1)
                 {
-                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO ORDER BY ORDEN ASC";
+                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO, CODIGO_CENTRO_COSTO, ORDEN, ANULADO FROM ADMIN.CENTRO_COSTO ORDER BY ORDEN ASC";
                 }
                 else
                 {
-                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO FROM ADMIN.CENTRO_COSTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
+                    strSQL = "SELECT ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO, CODIGO_CENTRO_COSTO, ORDEN, ANULADO FROM ADMIN.CENTRO_COSTO WHERE ANULADO = 0 ORDER BY ORDEN ASC";
                 }
 
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -547,7 +547,7 @@ namespace APISICA.Controllers
                 }
 
                 string strSQL = ""; ;
-                strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR FROM ADMIN.USUARIO_EXTERNO UX ";
+                strSQL = "SELECT UX.ID_USUARIO_EXTERNO AS ID, UX.NOMBRE_USUARIO_EXTERNO, LA.NOMBRE_AREA, UX.EMAIL, UX.NOTIFICAR, UX.ID_AREA_FK FROM ADMIN.USUARIO_EXTERNO UX ";
                 strSQL += "LEFT JOIN ADMIN.LAREA LA ON UX.ID_AREA_FK = LA.ID_AREA ";
                 strSQL += "WHERE UX.NOMBRE_USUARIO_EXTERNO LIKE '%" + listausuext.nombreusuarioexterno + "%'";
                 if (listausuext.anulado == 0)
@@ -559,7 +559,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
 
                     dt = conn.LlenarDataTable(strSQL);
@@ -603,26 +603,19 @@ namespace APISICA.Controllers
                     return Unauthorized("Sesion no encontrada");
                 }
 
-                string strSQL = ""; ;
-                if (listaubi.tipoubicacion == 1)
+                string strSQL = "";
+                strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
+                strSQL += "WHERE PRESTAR = 1";
+                if (listaubi.anulado == 0)
                 {
-                    strSQL = "SELECT UBI.ID_UBICACION, UBI.NOMBRE_UBICACION, UBI.ORDEN, UBI.ANULADO, UBI.PRESTAR FROM ADMIN.UBICACION UBI ";
-                    strSQL += "WHERE PRESTAR = 1";
-                    if (listaubi.anulado == 0)
-                    {
-                        strSQL += " AND UBI.ANULADO = 0";
-                    }
-                    strSQL += " ORDER BY UBI.ORDEN ASC";
+                    strSQL += " AND UBI.ANULADO = 0";
                 }
-                else
-                {
-                    strSQL += " AND U.ANULADO = 0 AND U.ID_USUARIO <> " + cuenta.IdUser + " AND A.REAL = 1 AND U.REAL = 1";
-                }
+                strSQL += " ORDER BY UBI.ORDEN ASC";
 
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
 
                     dt = conn.LlenarDataTable(strSQL);
@@ -671,7 +664,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int i = conn.EjecutarQueryEscalar(strSQL);
                     conn.Cerrar();
@@ -714,7 +707,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     string strSQL = "SELECT NVL(ID_UBICACION, 0) FROM ADMIN.UBICACION UBI WHERE UPPER(NOMBRE_UBICACION) = UPPER('" + validarubi.strubicacion + "') AND ANULADO = 0";
                     int i = conn.EjecutarQueryEscalar(strSQL);
@@ -768,7 +761,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
 
                     strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID, ID_UBICACION, EST.NOMBRE_ESTADO AS ESTADO,
@@ -853,7 +846,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int id = conn.EjecutarQueryEscalar(strSQL);
                     conn.Cerrar();
@@ -870,5 +863,15 @@ namespace APISICA.Controllers
                 return Unauthorized("No se recibió bearer token");
             }
         }
+
+        /*
+        [HttpGet("Prueba")]
+        public string prueba()
+        {
+            Cuenta cuenta = new Cuenta();
+            cuenta.UsPs = "EWZOXE9hWhC6SZxvUgs7qA==";
+            cuenta.UsLo = "q5z7whrLO7pfrXEwGSPSKA==";
+            return AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE"));
+        }*/
     }
 }

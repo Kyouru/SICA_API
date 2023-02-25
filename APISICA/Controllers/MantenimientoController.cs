@@ -17,8 +17,6 @@ namespace APISICA.Controllers
             _configuration = configuration;
         }
 
-
-
         [HttpPost("crearusuarioexterno")]
         public IActionResult UsuarioExternoCrear(UsuarioExternoCrearClass usuext)
         {
@@ -45,7 +43,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int cont = conn.EjecutarQueryEscalar(strSQL);
                     if (cont == 0)
@@ -112,12 +110,8 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    //conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
-                    /*conn.iniciaCommand(strSQL);
-                    int cont = conn.ejecutarQueryEscalar();
-                    if (cont == 0)
-                    {*/
 
                     strSQL = "UPDATE ADMIN.USUARIO_EXTERNO SET NOMBRE_USUARIO_EXTERNO = '" + usuext.nombreusuario + "', EMAIL = '" + usuext.correousuario + "', NOTIFICAR = " + usuext.notificar + ", ID_AREA_FK = " + usuext.idarea + " WHERE ID_USUARIO_EXTERNO = " + usuext.idaux;
 
@@ -172,7 +166,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -221,7 +215,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -268,7 +262,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -316,7 +310,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -362,7 +356,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -408,7 +402,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -456,7 +450,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -501,7 +495,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -547,7 +541,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -595,7 +589,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -641,7 +635,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -688,7 +682,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
 
@@ -736,7 +730,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -755,5 +749,424 @@ namespace APISICA.Controllers
             }
         }
 
+
+        [HttpPost("productoagregar")]
+        public IActionResult ProductoAgregar(MantenimientoProductoAgregarClass prodagregar)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "INSERT INTO ADMIN.LPRODUCTO (ID_PRODUCTO, NOMBRE_PRODUCTO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_PRODUCTO),0)+1 FROM ADMIN.LPRODUCTO), '" + prodagregar.strproducto + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LPRODUCTO), 0)";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+
+        [HttpPost("productoorden")]
+        public IActionResult ProductoOrden(MantenimientoProductoOrdenClass prodorden)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LPRODUCTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LPRODUCTO WHERE ID_PRODUCTO = " + prodorden.idproducto + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LPRODUCTO WHERE ID_PRODUCTO = " + prodorden.idproducto + ") + (" + prodorden.ordendif + ")";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    strSQL = "UPDATE ADMIN.LPRODUCTO SET ORDEN = (SELECT ORDEN FROM ADMIN.LPRODUCTO WHERE ID_PRODUCTO = " + prodorden.idproducto + ") + (" + prodorden.ordendif + ") WHERE ID_PRODUCTO = " + prodorden.idproducto;
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+        [HttpPost("productoanular")]
+        public IActionResult ProductoAnular(MantenimientoProductoAnularClass prodanular)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LPRODUCTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LPRODUCTO WHERE ID_PRODUCTO = " + prodanular.idproducto + ") WHERE ID_PRODUCTO = " + prodanular.idproducto;
+                Conexion conn = new Conexion();
+
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+        [HttpPost("pendienteagregar")]
+        public IActionResult PendienteAgregar(MantenimientoPendienteAgregarClass penagregar)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "INSERT INTO ADMIN.LPENDIENTE (ID_PENDIENTE, NOMBRE_PENDIENTE, TIPO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_PENDIENTE),0)+1 FROM ADMIN.LPENDIENTE), '" + penagregar.strpendiente + "', " + penagregar.tipo + " (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.LPENDIENTE WHERE TIPO = " + penagregar.tipo + "), 0)";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+
+        [HttpPost("pendienteorden")]
+        public IActionResult PendienteOrden(MantenimientoPendienteOrdenClass penorden)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LPENDIENTE SET ORDEN = (SELECT ORDEN FROM ADMIN.LPENDIENTE WHERE ID_PENDIENTE = " + penorden.idpendiente + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.LPENDIENTE WHERE ID_PENDIENTE = " + penorden.idpendiente + ") + (" + penorden.ordendif + ") AND TIPO = " + penorden.tipo;
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    strSQL = "UPDATE ADMIN.LPENDIENTE SET ORDEN = (SELECT ORDEN FROM ADMIN.LPENDIENTE WHERE ID_PENDIENTE = " + penorden.idpendiente + ") + (" + penorden.ordendif + ") WHERE ID_PENDIENTE = " + penorden.idpendiente;
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+        [HttpPost("pendienteanular")]
+        public IActionResult PendienteAnular(MantenimientoPendienteAnularClass penanular)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.LPENDIENTE SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.LPENDIENTE WHERE ID_PENDIENTE = " + penanular.idpendiente + ") WHERE ID_PENDIENTE = " + penanular.idpendiente;
+                Conexion conn = new Conexion();
+
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+        [HttpPost("centrocostoagregar")]
+        public IActionResult CentroCostoAgregar(MantenimientoCentroCostoAgregarClass ccagregar)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "INSERT INTO ADMIN.CENTRO_COSTO (ID_CENTRO_COSTO, NOMBRE_CENTRO_COSTO, CODIGO_CENTRO_COSTO, ORDEN, ANULADO) VALUES ((SELECT NVL(MAX(ID_CENTRO_COSTO),0)+1 FROM ADMIN.CENTRO_COSTO), '" + ccagregar.strnombrecentrocosto + "', '" + ccagregar.strcodigocentrocosto + "', (SELECT NVL(MAX(ORDEN),0)+1 FROM ADMIN.CENTRO_COSTO), 0)";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+
+        [HttpPost("centrocostoorden")]
+        public IActionResult CentroCostoOrden(MantenimientoCentroCostoOrdenClass prodorden)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.CENTRO_COSTO SET ORDEN = (SELECT ORDEN FROM ADMIN.CENTRO_COSTO WHERE ID_CENTRO_COSTO = " + prodorden.idcentrocosto + ") WHERE ORDEN = (SELECT ORDEN FROM ADMIN.CENTRO_COSTO WHERE ID_CENTRO_COSTO = " + prodorden.idcentrocosto + ") + (" + prodorden.ordendif + ")";
+
+                Conexion conn = new Conexion();
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+
+                    strSQL = "UPDATE ADMIN.CENTRO_COSTO SET ORDEN = (SELECT ORDEN FROM ADMIN.CENTRO_COSTO WHERE ID_CENTRO_COSTO = " + prodorden.idcentrocosto + ") + (" + prodorden.ordendif + ") WHERE ID_CENTRO_COSTO = " + prodorden.idcentrocosto;
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
+
+        [HttpPost("centrocostoanular")]
+        public IActionResult CentroCostoAnular(MantenimientoCentroCostoAnularClass prodanular)
+        {
+            string authHeader = Request.Headers["Authorization"];
+            if (authHeader != null && authHeader.StartsWith("Bearer"))
+            {
+                string bearerToken = authHeader.Substring("Bearer ".Length).Trim();
+                Cuenta cuenta;
+                try
+                {
+                    cuenta = TokenFunctions.ValidarToken(_configuration.GetConnectionString("UserCheck"), bearerToken);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                if (!(cuenta.IdUser > 0))
+                {
+                    return Unauthorized("Sesion no encontrada");
+                }
+
+                string strSQL = "UPDATE ADMIN.CENTRO_COSTO SET ANULADO = (SELECT ABS(ANULADO - 1) FROM ADMIN.CENTRO_COSTO WHERE ID_CENTRO_COSTO = " + prodanular.idcentrocosto + ") WHERE ID_CENTRO_COSTO = " + prodanular.idcentrocosto;
+                Conexion conn = new Conexion();
+
+                try
+                {
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
+                    conn.Conectar();
+                    conn.EjecutarQuery(strSQL);
+                    conn.Cerrar();
+
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    conn.Cerrar();
+                    return BadRequest(ex.Message);
+                }
+            }
+            else
+            {
+                return Unauthorized("No se recibió bearer token");
+            }
+        }
     }
 }

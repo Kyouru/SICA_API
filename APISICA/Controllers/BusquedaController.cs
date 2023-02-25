@@ -89,7 +89,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     dt.TableName = "Buscar";
@@ -142,7 +142,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -188,7 +188,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     Functions.guardarEditar(conn, cuenta, guardar);
 
                     conn.Cerrar();
@@ -256,7 +256,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -323,7 +323,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -462,7 +462,7 @@ namespace APISICA.Controllers
 
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();

@@ -116,7 +116,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -164,7 +164,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -209,7 +209,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int n = conn.EjecutarQueryEscalar(strSQL);
                     conn.Cerrar();
@@ -253,7 +253,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int i = conn.EjecutarQueryEscalar(strSQL);
                     conn.Cerrar();
@@ -304,7 +304,7 @@ namespace APISICA.Controllers
                     }
 
                     string strSQL = "DELETE FROM ADMIN.TMP_CARRITO WHERE ID_USUARIO_FK = " + cuenta.IdUser;
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();
@@ -365,7 +365,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     dt = conn.LlenarDataTable(strSQL);
                     conn.Cerrar();
@@ -416,7 +416,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     conn.EjecutarQuery(strSQL);
                     conn.Cerrar();

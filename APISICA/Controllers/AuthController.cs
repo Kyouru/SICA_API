@@ -48,7 +48,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     CreatePasswordHash(request.Password, out string passwordHash, out string passwordSalt);
 
                     string strSQL = "UPDATE ADMIN.USUARIO SET CAMBIAR_PASSWORD = 0, PASSWORDHASH = '" + passwordHash + "', PASSWORDSALT = '" + passwordSalt + "' WHERE ID_USUARIO = " + cuenta.IdUser;
@@ -98,15 +98,17 @@ namespace APISICA.Controllers
 
                 token = CreateToken(request.Username);
 
-                strSQL = "UPDATE ADMIN.USUARIO SET JWT = '" + token + "' WHERE NOMBRE_USUARIO = '" + request.Username + "'";
-
+                //strSQL = "UPDATE ADMIN.USUARIO SET JWT = '" + token + "' WHERE NOMBRE_USUARIO = '" + request.Username + "'";
+                strSQL = "UPDATE ADMIN.LOGTOKEN SET FECHAFIN = TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS') WHERE FECHAFIN IS NULL AND ID_USUARIO_FK = " + Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "-1");
+                conn.EjecutarQuery(strSQL);
+                strSQL = "INSERT INTO ADMIN.LOGTOKEN (JWT, ID_USUARIO_FK) VALUES ('" + token + "', " + Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "-1") + ")";
                 conn.EjecutarQuery(strSQL);
                 conn.Cerrar();
             }
             catch (Exception ex)
             {
                 conn.Cerrar();
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + strSQL);
             }
 
             try
@@ -155,7 +157,7 @@ namespace APISICA.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + strSQL);
             }
         }
 

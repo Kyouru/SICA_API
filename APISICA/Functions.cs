@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
+using System.Security.Policy;
 
 namespace APISICA
 {
@@ -46,26 +47,26 @@ namespace APISICA
                      " + cuenta.IdUser + ", SYSDATE FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + jsonbody.idinventario + " RETURNING ID_INVENTARIO_ANTERIOR_NEW INTO :numero";
             */
             string strSQL = "INSERT INTO ADMIN.INVENTARIO_ANTERIOR (ID_INVENTARIO_GENERAL_FK, NUMERO_DE_CAJA, ID_DEPARTAMENTO_FK, ID_DOCUMENTO_FK, ID_DETALLE_FK, FECHA_DESDE, FECHA_HASTA, ID_CLASIFICACION_FK, ID_PRODUCTO_FK, ID_CENTRO_COSTO_FK, CODIGO_SOCIO, NOMBRE_SOCIO, NUMEROSOLICITUD, OBSERVACION, ID_USUARIO_REGISTRA_FK, FECHA_MODIFICA, PEN_NOMBRE, PEN_DETALLE, PEN_BANCA, DESC_CONCAT, USUARIO, FECHA) VALUES (";
-            strSQL += "(SELECT ID_INVENTARIO_GENERAL FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT NUMERO_DE_CAJA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_DEPARTAMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_DOCUMENTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_DETALLE_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT FECHA_DESDE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT FECHA_HASTA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_CLASIFICACION_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_PRODUCTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_CENTRO_COSTO_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT CODIGO_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT NOMBRE_SOCIO FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT NUMEROSOLICITUD FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT OBSERVACION FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT ID_USUARIO_REGISTRA_FK FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT FECHA_MODIFICA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT PEN_NOMBRE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT PEN_DETALLE FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT PEN_BANCA FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
-            strSQL += "(SELECT DESC_CONCAT FROM INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_INVENTARIO_GENERAL FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NUMERO_DE_CAJA FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DEPARTAMENTO_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DOCUMENTO_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_DETALLE_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_DESDE FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_HASTA FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_CLASIFICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_PRODUCTO_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_CENTRO_COSTO_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT CODIGO_SOCIO FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NOMBRE_SOCIO FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT NUMEROSOLICITUD FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT OBSERVACION FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT ID_USUARIO_REGISTRA_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT FECHA_MODIFICA FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_NOMBRE FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_DETALLE FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT PEN_BANCA FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
+            strSQL += "(SELECT DESC_CONCAT FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + guardar.idinventario + "),";
             strSQL += cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS')) RETURNING ID_INVENTARIO_ANTERIOR INTO :numero";
 
             conn.Conectar();
@@ -160,6 +161,5 @@ namespace APISICA
             conn.EjecutarQuery(strSQL);
 
         }
-
     }
 }

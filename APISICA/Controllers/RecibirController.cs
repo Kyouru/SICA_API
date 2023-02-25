@@ -163,7 +163,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int lastinsertid = conn.InsertReturnID(strSQL);
                     if (lastinsertid < 0)
@@ -219,7 +219,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     int cont, iddepartamento, iddocumento, iddetalle, idclasificacion, idproducto, idcentrocosto;
                     string concat = "";
@@ -364,7 +364,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     string strSQL = @"SELECT IG.ID_INVENTARIO_GENERAL AS ID, IG.NUMERO_DE_CAJA AS CAJA,
                                 CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                                      WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
@@ -437,7 +437,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
                                 CASE WHEN UBIENT.ID_UBICACION = 1 THEN USUENT.NOMBRE_USUARIO
                                      WHEN UBIENT.ID_UBICACION = 2 THEN USUEXENT.NOMBRE_USUARIO_EXTERNO
@@ -518,7 +518,7 @@ namespace APISICA.Controllers
                 string strSQL = "";
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
                                 CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                                      WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
@@ -588,7 +588,7 @@ namespace APISICA.Controllers
                 string strSQL = "";
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
                                 CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                                      WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
@@ -656,7 +656,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     string strSQL = @"SELECT ID_INVENTARIO_GENERAL AS ID,
                                 CASE WHEN UBI.ID_UBICACION = 1 THEN USU.NOMBRE_USUARIO
                                      WHEN UBI.ID_UBICACION = 2 THEN USUEX.NOMBRE_USUARIO_EXTERNO
@@ -728,7 +728,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
                     string strSQL = "INSERT INTO ADMIN.INVENTARIO_HISTORICO (ID_INVENTARIO_GENERAL_FK, ID_USUARIO_ENTREGA_FK, ID_USUARIO_RECIBE_FK, FECHA_INICIO, FECHA_FIN, OBSERVACION_RECIBE, RECIBIDO, ANULADO, ID_UBICACION_ENTREGA_FK, ID_UBICACION_RECIBE_FK, USUARIO, FECHA)";
                     strSQL += " VALUES (" + recibir.idinventario + ", (SELECT ID_USUARIO_POSEE_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + recibir.idinventario + "), " + cuenta.IdUser + ", TO_DATE('" + recibir.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('" + recibir.fecha + "', 'YYYY-MM-DD HH24:MI:SS'), '" + recibir.observacion + "', 1, 0, (SELECT ID_UBICACION_FK FROM ADMIN.INVENTARIO_GENERAL WHERE ID_INVENTARIO_GENERAL = " + recibir.idinventario + "), " + recibir.idubicacionrecibe + ", " + cuenta.IdUser + ", TO_DATE('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', 'YYYY-MM-DD HH24:MI:SS'))";
@@ -783,7 +783,7 @@ namespace APISICA.Controllers
                 Conexion conn = new Conexion();
                 try
                 {
-                    conn = new Conexion(_configuration.GetConnectionString(cuenta.Permiso));
+                    conn = new Conexion(AesFunctions.connString(cuenta, _configuration.GetSection("AuthController:aeskey").Value, _configuration.GetConnectionString("BASE")));
                     conn.Conectar();
 
                     if (recactualizarpen.modificado)

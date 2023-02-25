@@ -12,11 +12,10 @@ namespace APISICA
             if (!CheckTokenIsValid(token))
             {
                 cuenta.IdUser = -1;
-                cuenta.Permiso = "";
                 return cuenta;
             }
 
-            string strSQL = "SELECT ID_USUARIO, CONNUSER FROM ADMIN.USUARIO WHERE JWT = '" + token + "'";
+            string strSQL = "SELECT U.ID_USUARIO, UP.USLO, UP.USPS FROM ADMIN.USUARIO U LEFT JOIN ADMIN.USPW UP ON U.ID_USPW_FK = UP.ID_USPW INNER JOIN ADMIN.LOGTOKEN LT ON U.ID_USUARIO = LT.ID_USUARIO_FK WHERE JWT = '" + token + "' AND LT.FECHAFIN IS NULL";
 
             Conexion conn = new Conexion(connString);
             DataTable dt = new DataTable();
@@ -26,13 +25,13 @@ namespace APISICA
                 dt = conn.LlenarDataTable(strSQL);
                 conn.Cerrar();
                 cuenta.IdUser = Int32.Parse(dt.Rows[0]["ID_USUARIO"].ToString() ?? "NULL");
-                cuenta.Permiso = dt.Rows[0]["CONNUSER"].ToString() ?? "NULL";
+                cuenta.UsLo = dt.Rows[0]["USLO"].ToString() ?? "NULL";
+                cuenta.UsPs = dt.Rows[0]["USPS"].ToString() ?? "NULL";
             }
             catch
             {
                 conn.Cerrar();
                 cuenta.IdUser = -1;
-                cuenta.Permiso = "No";
             }
             return cuenta;
         }
